@@ -1,4 +1,4 @@
-# Family Tree Mod Version 0.04.0
+# Family Tree Mod Version 0.4.0
 
 ## Mod Description:
 
