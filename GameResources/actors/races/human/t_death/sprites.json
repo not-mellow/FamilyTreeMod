@@ -1,0 +1,74 @@
+{
+    "Default": {
+        "PivotX": 0.5,
+        "PivotY": 0,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    "Specific": [{
+        "Path": "walk_0_item.png",
+        "PivotX": 0.5,
+        "PivotY": 1.5,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_1_item.png",
+        "PivotX": 0.5,
+        "PivotY": 1.5,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_2_item.png",
+        "PivotX": 0.5,
+        "PivotY": 2,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_3_item.png",
+        "PivotX": 0.5,
+        "PivotY": 2,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_0_head.png",
+        "PivotX": 0.5,
+        "PivotY": 5,
+        "RectX": 5,
+        "RectY": 5,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_1_head.png",
+        "PivotX": 0.5,
+        "PivotY": 5,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_2_head.png",
+        "PivotX": 0.5,
+        "PivotY": 5,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    },
+    {
+        "Path": "walk_3_head.png",
+        "PivotX": 0.5,
+        "PivotY": 5,
+        "RectX": 0,
+        "RectY": 0,
+        "PixelsPerUnit": 1
+    }
+    ]
+}
