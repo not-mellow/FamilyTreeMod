@@ -404,6 +404,8 @@ namespace FamilyTreeMod
 
         public string loverID;
 
+        public string deadLoverID;
+
         public int fatherFamilyIndex;
 
         public int motherFamilyIndex;

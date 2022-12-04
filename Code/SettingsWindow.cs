@@ -23,6 +23,7 @@ namespace FamilyTreeMod
 
         public static void init()
         {
+            ScrollWindow.checkWindowExist("inspect_unit");
             createOption(
                 "NameOption",
                 "debug_icon",

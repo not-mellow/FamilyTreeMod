@@ -10,6 +10,7 @@ namespace FamilyTreeMod
     {
         public static void init()
         {
+            AssetModLoader.load();
             PowerButtons.CreateButton(
                 "familySelect",
                 Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.Icons.family_icon.png"),
@@ -29,7 +30,7 @@ namespace FamilyTreeMod
                 createPos(2,0),
                 ButtonType.Click,
                 DejTab.additionalPowersTab.transform,
-                () => FamilyOverviewWindow.openWindow()
+                FamilyOverviewWindow.openWindow
                 );
             
             PowerButtons.CreateButton(
@@ -100,7 +101,8 @@ namespace FamilyTreeMod
             
             NCMS.Utils.PowerButtons.CreateButton(
                 "cityConvert",
-                Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.Icons.convert_icon.png"),
+                /*Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.Icons.convert_icon.png"),*/
+                SpriteTextureLoader.getSprite("@wb_iconSmilePlanet.png"),
                 "Convert City",
                 "Convert The Selected City To Another",
                 createPos(9,0),

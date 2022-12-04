@@ -24,6 +24,7 @@ namespace FamilyTreeMod
         public static Dictionary<string, Family> families = new Dictionary<string, Family>();
         public static Dictionary<ActorStatus, UnbornActor> unbornActorList = new Dictionary<ActorStatus, UnbornActor>();
         public static Dictionary<string, deadActor> deadActorList = new Dictionary<string, deadActor>();
+        public static Dictionary<Kingdom, Family> kingdomFamilies = new Dictionary<Kingdom, Family>();
         public static int curID = 0;
 
         public static void openWindow()
