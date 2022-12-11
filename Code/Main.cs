@@ -34,6 +34,7 @@ namespace FamilyTreeMod
 
             if (!tabInitialized)
             {
+                ScrollWindow.checkWindowExist("inspect_unit");
                 DejTab.init();
                 RelationsWindow.init();
                 FamilyWindow.init();
@@ -43,6 +44,8 @@ namespace FamilyTreeMod
                 TabButtons.init();
                 // StatsWindow.init();
                 // AddStatsWindow.init();
+                DeadActorWindow.init();
+                FamilyInspectWindow.init();
                 tabInitialized = true;
             }
 

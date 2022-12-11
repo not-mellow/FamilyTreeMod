@@ -128,7 +128,7 @@ namespace FamilyTreeMod
                 isDead = true;
             }
 
-            GameObject structure = actorStructure(parent, actor, dead);
+            GameObject structure = actorStructure(parent, actor, dead, actorIDSetup);
             if (isDead)
             {
                 createChildrenStructure(structure, dead.childrenID, increaseX);
@@ -142,12 +142,12 @@ namespace FamilyTreeMod
             return structure;
         }
 
-        private static GameObject actorStructure(GameObject parent, Actor actor, deadActor dead)
+        private static GameObject actorStructure(GameObject parent, Actor actor, deadActor dead, string actorID)
         {
             GameObject structure = new GameObject("structureHolder");
             structure.transform.SetParent(parent.transform);
 
-            deadOrAliveActorBG(structure, actor, dead, new Vector3(-80, 0, 0));
+            deadOrAliveActorBG(structure, actor, dead, new Vector3(-80, 0, 0), actorID);
 
             string loverID = null;
             if (actor != null)
@@ -167,7 +167,7 @@ namespace FamilyTreeMod
             if (loverID.Contains("dead"))
             {
                 deadActor deadLover = FamilyOverviewWindow.deadActorList[loverID];
-                deadOrAliveActorBG(structure, null, deadLover, loverPos);
+                deadOrAliveActorBG(structure, null, deadLover, loverPos, loverID);
             }
             else
             {
@@ -178,10 +178,10 @@ namespace FamilyTreeMod
             return structure;
         }
 
-        private static GameObject deadOrAliveActorBG(GameObject parent, Actor actor, deadActor dead, Vector3 pos)
+        private static GameObject deadOrAliveActorBG(GameObject parent, Actor actor, deadActor dead, Vector3 pos, string deadID = null)
         {
             GameObject actorBG = null;
-            if (actor != null)
+            if (actor != null && actor.data.alive)
             {
                 actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
                 NewBGs.createAvatar(actor, actorBG, 30, new Vector3(0, -30, 0));
@@ -191,7 +191,7 @@ namespace FamilyTreeMod
             else if (dead != null)
             {
                 actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
-                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0));
+                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), deadID);
                 GameObject name = actorBG.transform.GetChild(0).gameObject;
                 addSizedText(dead.name, name, 20, new Vector3(0, 0, 0));
             }
@@ -214,7 +214,7 @@ namespace FamilyTreeMod
                 {
                     deadActor childDead = FamilyOverviewWindow.deadActorList[childID];
                     childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
-                    NewBGs.createAvatar(null, childBG, 30, new Vector3(0, -30, 0));
+                    NewBGs.createAvatar(null, childBG, 30, new Vector3(0, -30, 0), childID);
                     GameObject name = childBG.transform.GetChild(0).gameObject;
                     addSizedText(childDead.name/*childID*/, name, 20, new Vector3(0, 0, 0));
                     newChildrenID = childDead.childrenID;
@@ -292,10 +292,13 @@ namespace FamilyTreeMod
             int posY = family.prevHeads.Count;
             GameObject currentHeadBG = NewBGs.createAvatarBG(WindowManager.windowContents["familyWindow"], new Vector2(100, 100), new Vector3(130, -60, 0));
             Actor curHead = NewActions.getActorByIndex(family.HEADID, family.index);
-            NewBGs.createAvatar(curHead, currentHeadBG, 30, new Vector3(0, -30, 0));
+            if (curHead != null)
+            {
+                NewBGs.createAvatar(curHead, currentHeadBG, 30, new Vector3(0, -30, 0));
 
-            GameObject curHeadNameObj = currentHeadBG.transform.GetChild(0).gameObject;
-            addSizedText(curHead.getName(), curHeadNameObj, 20, new Vector3(0, 0, 0));
+                GameObject curHeadNameObj = currentHeadBG.transform.GetChild(0).gameObject;
+                addSizedText(curHead.getName(), curHeadNameObj, 20, new Vector3(0, 0, 0));
+            }
             NewBGs.addText($"Current Generation: ", currentHeadBG, 30, new Vector3(-200, -55, 0));
             foreach(string headID in family.prevHeads)
             {
@@ -304,7 +307,7 @@ namespace FamilyTreeMod
                 if (headID.Contains("dead"))
                 {
                     deadActor deadHead = FamilyOverviewWindow.deadActorList[headID];
-                    NewBGs.createAvatar(null, headBG, 30, new Vector3(0, -30, 0));
+                    NewBGs.createAvatar(null, headBG, 30, new Vector3(0, -30, 0), headID);
                     actorName = deadHead.name;
                 }
                 else

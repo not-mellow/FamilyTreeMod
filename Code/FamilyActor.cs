@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
@@ -122,9 +123,9 @@ namespace FamilyTreeMod
 
         public void addChild(Actor actor, string id, bool becomeHead, string newDeadID)
         {
-            Family fatherFamily = FamilyOverviewWindow.families[this.fatherFamilyIndex.ToString()];
-            Family motherFamily = FamilyOverviewWindow.families[this.motherFamilyIndex.ToString()];
-            Family curFamily = FamilyOverviewWindow.families[this.familyIndex.ToString()];
+            Family fatherFamily = FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex);
+            Family motherFamily = FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
+            Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
             FamilyActor actorFamily = FamilyActor.getFamily(actor);
             fatherFamily.addActor(actor);
             motherFamily.addActor(actor);
@@ -156,14 +157,13 @@ namespace FamilyTreeMod
                 {
                     curFamily.heirID = newHeir.data.actorID;
                     FamilyActor.getFamily(newHeir).isHeir = true;
-                    // Debug.Log($"New Child Became Heir: {curFamily.heirID}");
                 }
             }
         }
 
         public void removeChild(Actor actor, string id)
         {
-            Family curFamily = FamilyOverviewWindow.families[this.familyIndex.ToString()];
+            Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
             curFamily.actors.Remove(actor);
             this.childrenID.Remove(id);
         }
@@ -178,7 +178,36 @@ namespace FamilyTreeMod
             if(this.isHead)
             {
                 family.prevHeads.Add(this.deadID);
+                if (!FamilyOverviewWindow.headInfoList.ContainsKey(this.deadID))
+                {
+                    FamilyOverviewWindow.headInfoList.Add(this.deadID, new ActorHead{
+                        traitIds = actor.data.traits,
+                        curStats = actor.curStats,
+                        title = FamilyOverviewWindow.getTitle(actor.data.profession),
+                        kills = actor.data.kills,
+                        age = actor.data.age,
+                        level = actor.data.level,
+                        familyIndex = this.familyIndex
+                    });
+                }
+                FamilyOverviewWindow.getHeadActor(this.deadID).setUnitTex(actor);
             }
+            // if (!FamilyOverviewWindow.headInfoList.ContainsKey(this.deadID))
+            // {
+            //     FamilyOverviewWindow.headInfoList.Add(this.deadID, new ActorHead{
+            //         traitIds = actor.data.traits,
+            //         curStats = actor.curStats,
+            //         title = FamilyOverviewWindow.getTitle(actor.data.profession),
+            //         kills = actor.data.kills,
+            //         age = actor.data.age,
+            //         level = actor.data.level,
+            //         familyIndex = this.familyIndex
+            //     });
+            // }
+            // FamilyOverviewWindow.getHeadActor(this.deadID).setUnitTex(actor);
+
+            FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex);
+            FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
             if (this.fatherID != null)
             {
                 Actor father = NewActions.getActorByIndex(this.fatherID, this.familyIndex, this.fatherFamilyIndex, this.motherFamilyIndex);
@@ -194,7 +223,7 @@ namespace FamilyTreeMod
                     deadFather.childrenID.Add(this.deadID);
                     this.fatherID = this.deadFatherID;
                 }
-                FamilyOverviewWindow.families[fatherFamilyIndex.ToString()].actors.Remove(actor);
+                FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex).actors.Remove(actor);
             }
             
             if (this.motherID != null)
@@ -212,7 +241,7 @@ namespace FamilyTreeMod
                     deadMother.childrenID.Add(this.deadID);
                     this.motherID = this.deadMotherID;
                 }
-                FamilyOverviewWindow.families[motherFamilyIndex.ToString()].actors.Remove(actor);
+                FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex).actors.Remove(actor);
             }
 
             foreach (string childID in this.childrenID)
@@ -276,7 +305,9 @@ namespace FamilyTreeMod
 
         public void refreshHead(Actor pActor)
         {
-            Family family = FamilyOverviewWindow.families[this.familyIndex.ToString()];
+            FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex);
+            FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
+            Family family = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
             bool setHead = false;
             Actor heirActor = NewActions.getActorByIndex(family.heirID, family.index, this.fatherFamilyIndex, this.motherFamilyIndex);
             if (heirActor == null)
@@ -314,17 +345,20 @@ namespace FamilyTreeMod
 
             if (setHead)
             {
-                Actor newHead = NewActions.getActorByIndex(family.HEADID, family.index, this.fatherFamilyIndex, this.motherFamilyIndex);
-                FamilyActor.getFamily(newHead).isHead = true;
-                FamilyActor.getFamily(newHead).isHeir = false;
+                Actor newHead = NewActions.getActorByIndex(family.HEADID, family.index, this.fatherFamilyIndex, this.fatherFamilyIndex);
+                FamilyActor headActorFamily = FamilyActor.getFamily(newHead);
+                FamilyOverviewWindow.getFromFamilies(ref headActorFamily.fatherFamilyIndex);
+                FamilyOverviewWindow.getFromFamilies(ref headActorFamily.motherFamilyIndex);
+                headActorFamily.isHead = true;
+                headActorFamily.isHeir = false;
                 family.currentGeneration++;
                 Actor newHeir = family.getChildOrMember(
                     newHead.data.actorID,
-                    FamilyActor.getFamily(newHead).childrenID, 
+                    headActorFamily.childrenID, 
                     false, 
                     false, 
-                    FamilyActor.getFamily(newHead).fatherFamilyIndex, 
-                    FamilyActor.getFamily(newHead).motherFamilyIndex,
+                    headActorFamily.fatherFamilyIndex, 
+                    headActorFamily.motherFamilyIndex,
                     true,
                     newHead.kingdom
                 );
@@ -340,7 +374,9 @@ namespace FamilyTreeMod
 
         public void refreshHeir(Actor pActor)
         {
-            Family family = FamilyOverviewWindow.families[this.familyIndex.ToString()];
+            Family family = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
+            FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex);
+            FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
             Actor newHeir = family.getChildOrMember(
                 pActor.data.actorID,
                 this.childrenID, 
@@ -628,7 +664,7 @@ namespace FamilyTreeMod
         public string fatherID;
 
         public string motherID;
-        
+
         public string deadFatherID;
 
         public string deadMotherID;
@@ -662,20 +698,98 @@ namespace FamilyTreeMod
 
         public void addChild(Actor actor, string id, bool becomeHead, string newDeadID)
         {
-            Family fatherFamily = FamilyOverviewWindow.families[this.fatherFamilyIndex.ToString()];
-            Family motherFamily = FamilyOverviewWindow.families[this.motherFamilyIndex.ToString()];
-            Family curFamily = FamilyOverviewWindow.families[this.familyIndex.ToString()];
-            fatherFamily.addActor(actor);
-            motherFamily.addActor(actor);
-            curFamily.addActor(actor);
+            Family fatherFamily = FamilyOverviewWindow.getFromFamilies(ref this.fatherFamilyIndex);
+            Family motherFamily = FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
+            Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
+            if (fatherFamily != null)
+            {
+                fatherFamily.addActor(actor);
+            }
+            if (motherFamily != null)
+            {
+                motherFamily.addActor(actor);
+            }
+            if (curFamily != null)
+            {
+                curFamily.addActor(actor);
+            }
             this.childrenID.Add(id);
         }
 
         public void removeChild(Actor actor, string id)
         {
-            Family curFamily = FamilyOverviewWindow.families[this.familyIndex.ToString()];
+            Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
             curFamily.actors.Remove(actor);
             this.childrenID.Remove(id);
         }
+    }
+
+    [Serializable]
+    public class ActorHead
+    {
+        public List<string> traitIds;
+
+        public BaseStats curStats = new BaseStats();
+
+        public SerializeTexture unitTex;
+
+        public string title;
+
+        public int kills;
+
+        public int age;
+
+        public int level;
+
+        public int familyIndex;
+
+        public void setUnitTex(Actor actor)
+        {
+            actor.updateAnimation(0f, true);
+            actor.spriteAnimation.setFrameIndex(0);
+            actor.forceAnimation();
+		    actor.checkSpriteConstructor();
+            Sprite actorSpr = actor.spriteRenderer.sprite;
+            var croppedTexture = new Texture2D( (int)actorSpr.rect.width, (int)actorSpr.rect.height );
+            if (!actorSpr.texture.isReadable)
+            {
+                return;
+            }
+            var pixels = actorSpr.texture.GetPixels(  (int)actorSpr.textureRect.x, 
+                                                    (int)actorSpr.textureRect.y, 
+                                                    (int)actorSpr.textureRect.width, 
+                                                    (int)actorSpr.textureRect.height );
+            croppedTexture.SetPixels( pixels );
+            croppedTexture.Apply();
+            this.unitTex = new SerializeTexture();
+            unitTex.x = croppedTexture.width;
+            unitTex.y = croppedTexture.height;
+            unitTex.bytes = ImageConversion.EncodeToPNG(croppedTexture);
+        }
+
+        public Sprite getUnitTex()
+        {
+            if (unitTex == null)
+            {
+                return null;
+            }
+            Texture2D tex = new Texture2D(unitTex.x, unitTex.y);
+            tex.filterMode = FilterMode.Point;
+            tex.LoadImage(unitTex.bytes);
+            Sprite mySprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), Vector2.one);
+            return mySprite;
+
+        }
+    }
+
+    [Serializable]
+    public class SerializeTexture
+    {
+        [SerializeField]
+        public int x;
+        [SerializeField]
+        public int y;
+        [SerializeField]
+        public byte[] bytes;
     }
 }

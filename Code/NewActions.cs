@@ -71,39 +71,35 @@ namespace FamilyTreeMod
                 }
             }
 
-            if (secondIndex == -1)
+            if (secondIndex != -1)
             {
-                return null;
-            }
-
-            Family secondFamily = (Family)FamilyOverviewWindow.families[secondIndex.ToString()];
-            foreach(Actor actor in secondFamily.actors)
-            {
-                if (actor == null)
+                Family secondFamily = (Family)FamilyOverviewWindow.families[secondIndex.ToString()];
+                foreach(Actor actor in secondFamily.actors)
                 {
-                    continue;
-                }
-                if (actor.data.actorID == id)
-                {
-                    return actor;
+                    if (actor == null)
+                    {
+                        continue;
+                    }
+                    if (actor.data.actorID == id)
+                    {
+                        return actor;
+                    }
                 }
             }
 
-            if (thirdIndex == -1)
+            if (thirdIndex != -1)
             {
-                return null;
-            }
-
-            Family thirdFamily = (Family)FamilyOverviewWindow.families[thirdIndex.ToString()];
-            foreach(Actor actor in thirdFamily.actors)
-            {
-                if (actor == null)
+                Family thirdFamily = (Family)FamilyOverviewWindow.families[thirdIndex.ToString()];
+                foreach(Actor actor in thirdFamily.actors)
                 {
-                    continue;
-                }
-                if (actor.data.actorID == id)
-                {
-                    return actor;
+                    if (actor == null)
+                    {
+                        continue;
+                    }
+                    if (actor.data.actorID == id)
+                    {
+                        return actor;
+                    }
                 }
             }
             return null;
@@ -259,6 +255,7 @@ namespace FamilyTreeMod
 
             FamilyOverviewWindow.families = newFamilies;
             FamilyOverviewWindow.deadActorList = loadedData.deadActors;
+            FamilyOverviewWindow.headInfoList = loadedData.headInfo;
             FamilyOverviewWindow.curID = loadedData.overviewCurID;
             FamilyWindow.curID = loadedData.windowCurID;
 
@@ -300,6 +297,7 @@ namespace FamilyTreeMod
             SavedDicts savedDicts = new SavedDicts();
             savedDicts.families = savedFamilies;
             savedDicts.deadActors = savedDeadActors;
+            savedDicts.headInfo = FamilyOverviewWindow.headInfoList;
             savedDicts.overviewCurID = FamilyOverviewWindow.curID;
             savedDicts.windowCurID = FamilyWindow.curID;
 
@@ -323,6 +321,8 @@ namespace FamilyTreeMod
         public Dictionary<string, SavedFamily> families = new Dictionary<string, SavedFamily>();
 
         public Dictionary<string, deadActor> deadActors = new Dictionary<string, deadActor>();
+
+        public Dictionary<string, ActorHead> headInfo = new Dictionary<string, ActorHead>();
 
         public int overviewCurID = 0;
 

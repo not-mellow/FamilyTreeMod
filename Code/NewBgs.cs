@@ -69,7 +69,7 @@ namespace FamilyTreeMod
             return bannerGO;
         }
 
-        public static GameObject createAvatar(Actor actor, GameObject parent, int size, Vector3 pos)
+        public static GameObject createAvatar(Actor actor, GameObject parent, int size, Vector3 pos, string deadID = null)
         {
             if (actor == null)
             {
@@ -80,6 +80,11 @@ namespace FamilyTreeMod
                 ghostRectTransform.sizeDelta = new Vector2(size*2, size*2);
                 Image img = ghostObject.AddComponent<Image>();
                 img.sprite = Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.Icons.ghost_icon.png");
+
+                if (deadID != null)
+                {
+                    ghostObject.AddComponent<Button>().onClick.AddListener(() => deadOnClick(deadID));
+                }
                 return ghostObject;
             }
             var avatarObject = new GameObject("avatar");
@@ -113,6 +118,11 @@ namespace FamilyTreeMod
         {
             Config.selectedUnit = actor;
             Windows.ShowWindow("inspect_unit");
+        }
+
+        private static void deadOnClick(string deadID)
+        {
+            DeadActorWindow.openWindow(deadID);
         }
 
         public static GameObject createCrownIcon(GameObject parent, string title, Vector3 pos)
@@ -243,6 +253,29 @@ namespace FamilyTreeMod
             nameRect.localPosition = new Vector3(0, 55, 0);
             nameRect.sizeDelta = new Vector2(120, 40);
             return  avatarBG;
+        }
+
+        public static Button createBGWindowButton(GameObject parent, int posY, string iconName, string buttonName, string buttonDesc)
+        {
+            PowerButton button = PowerButtons.CreateButton(
+                buttonName,
+                Mod.EmbededResources.LoadSprite($"FamilyTreeMod.Resources.Icons.{iconName}.png"),
+                buttonName,
+                buttonDesc,
+                new Vector2(118, posY),
+                ButtonType.Click,
+                parent.transform,
+                FamilyInspectWindow.openWindow
+            );
+
+            Image buttonBG = button.gameObject.GetComponent<Image>();
+            buttonBG.sprite = Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.UI.backgroundTabButton.png");
+            Button buttonButton = button.gameObject.GetComponent<Button>();
+            buttonBG.rectTransform.localScale = Vector3.one;
+
+            // buttonButton.onClick.AddListener(() => checkToggledIcon(toggleIcon, name));
+
+            return buttonButton;
         }
     }
 }

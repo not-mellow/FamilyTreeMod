@@ -24,6 +24,7 @@ namespace FamilyTreeMod
             newWindow("addStatsWindow", "Add Stats Window");
             newWindow("cultureWindow", "Culture Window");
             newWindow("deadActorWindow", "Dead Actor Window");
+            newWindow("familyInspectWindow", "Family Inspect Window");
             // newWindow("filterWindow", "Filters");
         }
 

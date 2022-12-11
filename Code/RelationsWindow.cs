@@ -98,24 +98,7 @@ namespace FamilyTreeMod
             {
                 addSizedText(headActor.getName(), headName, 20, new Vector3(0, 0, 0));
                 headActorName = headActor.getName();
-                switch (headActor.data.profession)
-                {
-                    case UnitProfession.Unit:
-                        family.title = "Peasant";
-                        break;
-                    case UnitProfession.Warrior:
-                        family.title = "Knight";
-                        break;
-                    case UnitProfession.Leader:
-                        family.title = "Noble";
-                        break;
-                    case UnitProfession.King:
-                        family.title = "Royalty";
-                        break;
-                    default:
-                        family.title = "Peasant";
-                        break;
-                }
+                family.title = FamilyOverviewWindow.getTitle(headActor.data.profession);
             }
 
             Actor heirActor = NewActions.getActorByIndex(family.heirID, family.index);
