@@ -1,4 +1,19 @@
-Problems:
-1) random parent 2 children is not being checked for the children option
-File: FamilyPatches.cs
-Line: 95
+Beta Version 0.4.2 - Family Tree Mod
+- Re-added king inheritance to children of a family
+- Fixed save system
+- Fixed missing ids of children/mother/father/and lovers
+- Removed unnecessary processes and code
+(don't mind this if you don't use family tree mod)
+
+Beta Version 0.4.5 - Family Tree Mod
+- Added Dead Stat Window For Every Dead Unit In A Family Tree
+(Currently testing how well this performs)
+- Added Delete Button For Families In The Overview Window
+(Now dead families don't need to hog space in the save files)
+- Added More Stats like Kills/Age/Levels in the dead unit stats window
+(don't mind this if you don't use family tree mod)
+
+Beta Version 0.4.7 - Bosses and Inheritance
+- Added Inspect window for inspecting individual unit's family and history (In Progress)
+- Added Cause of death in dead actor window
+- Reworked dead actor info only being saved for family heads for performance

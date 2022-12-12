@@ -178,7 +178,7 @@ namespace FamilyTreeMod
             return structure;
         }
 
-        private static GameObject deadOrAliveActorBG(GameObject parent, Actor actor, deadActor dead, Vector3 pos, string deadID = null)
+        private static GameObject deadOrAliveActorBG(GameObject parent, Actor actor, deadActor dead, Vector3 pos, string deadID = null/*, ref newChildrenID*/)
         {
             GameObject actorBG = null;
             if (actor != null && actor.data.alive)
@@ -194,6 +194,7 @@ namespace FamilyTreeMod
                 NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), deadID);
                 GameObject name = actorBG.transform.GetChild(0).gameObject;
                 addSizedText(dead.name, name, 20, new Vector3(0, 0, 0));
+                // newChildrenID = childDead.childrenID;
             }
             return actorBG;
         }

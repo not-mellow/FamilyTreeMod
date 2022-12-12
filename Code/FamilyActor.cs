@@ -168,7 +168,7 @@ namespace FamilyTreeMod
             this.childrenID.Remove(id);
         }
 
-        public void actorDied(Actor actor, Family family/*, FamilyActor actorFamily*/)
+        public void actorDied(Actor actor, Family family, AttackType pType)
         {
             if (family.founderID == actor.data.actorID)
             {
@@ -187,7 +187,8 @@ namespace FamilyTreeMod
                         kills = actor.data.kills,
                         age = actor.data.age,
                         level = actor.data.level,
-                        familyIndex = this.familyIndex
+                        familyIndex = this.familyIndex,
+                        cause = pType
                     });
                 }
                 FamilyOverviewWindow.getHeadActor(this.deadID).setUnitTex(actor);
@@ -743,6 +744,8 @@ namespace FamilyTreeMod
 
         public int familyIndex;
 
+        public AttackType cause;
+
         public void setUnitTex(Actor actor)
         {
             actor.updateAnimation(0f, true);
@@ -778,7 +781,44 @@ namespace FamilyTreeMod
             tex.LoadImage(unitTex.bytes);
             Sprite mySprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), Vector2.one);
             return mySprite;
+        }
 
+        public string getDeathCause()
+        {
+            switch(this.cause)
+            {
+                case AttackType.Acid:
+                    return "Acid - Warning, don't touch that green yucky stuff on the ground.";
+                case AttackType.Fire:
+                    return "Fire - This person was too hot.";
+                case AttackType.Plague:
+                    return "Plague - Maybe wear a mask next time you go out.";
+                case AttackType.Tumor:
+                    return "Tumor Infection - Did someone plant a mushroom farm here?";
+                case AttackType.Other:
+                    return "Either By Combat In Battle Or Trait/God Effect";
+                case AttackType.Hunger:
+                    return "Starvation - They just wanted a sandwich.";
+                case AttackType.Eaten:
+                    return "Mauled By Beast - Twas the nature of the circle of life.";
+                case AttackType.Age:
+                    string start = "Old Age -";
+                    if (title == "Royalty")
+                    {
+                        return $"{start} They served their kingdom well while living a long life as Royalty. ";
+                    }
+                    return $"{start} They lived a long and good life as a {title}";
+                case AttackType.None:
+                    return "Hmm... This is odd, their cause of death was not recorded.";
+                case AttackType.GrowUp:
+                    return "This person's cause of death is an error. Pls report to Dej on WorldBox Discord.";
+                case AttackType.Poison:
+                    return "Poison - If only they had more health points ;(";
+                case AttackType.Block:
+                    return "Terrain - their life was on a ~dangerous~ path";
+                default:
+                    return "IDFK";
+            }
         }
     }
 

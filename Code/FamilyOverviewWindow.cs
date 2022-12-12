@@ -49,26 +49,9 @@ namespace FamilyTreeMod
                     posX = 0;
                     posY++;
                 }
-                Actor head = NewActions.getActorByIndex(kv.Value.HEADID, kv.Value.index);
-                GameObject familyHolder = new GameObject("familyHolder");
-                familyHolder.transform.SetParent(WindowManager.windowContents["familyOverview"].transform);
-                RectTransform familyRect = familyHolder.AddComponent<RectTransform>();
-                familyRect.localPosition = new Vector3(50 + (posX*40), -30 + (posY*-40), 0);
-
-                GameObject banner = null;
-                if (head != null)
-                {
-                    banner = NewBGs.createBanner(familyHolder, head.kingdom, new Vector2(130, 130));
-                }
-                else
-                {
-                    banner = NewBGs.createBanner(familyHolder, null, new Vector2(130, 130));
-                }
-                Button bannerButton = banner.GetComponent<Button>();
-                bannerButton.onClick.AddListener(() => RelationsWindow.openWindow(kv.Value));
-                NewBGs.createAvatar(head, familyHolder, 20, new Vector3(20, -30, 0));
-                NewBGs.addText(kv.Value.founderName, familyHolder, 20, new Vector3(0, -50, 0));
-
+                GameObject familyHolder = NewBGs.createFamilyElement(WindowManager.windowContents["familyOverview"], kv.Value, posX, posY);
+                familyHolder.transform.Find("bannerHolder").GetComponent<Button>().onClick.AddListener(() => RelationsWindow.openWindow(familyValue));
+                
                 GameObject deleteUI = new GameObject("deleteButton");
                 deleteUI.transform.SetParent(familyHolder.transform);
                 Image deleteImg = deleteUI.AddComponent<Image>();

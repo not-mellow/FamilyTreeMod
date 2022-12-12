@@ -72,8 +72,10 @@ namespace FamilyTreeMod
             }
             if (headActor != null)
             {
+                NewBGs.addText($"Cause Of Death: {headActor.getDeathCause()}", contents, 5, new Vector3(130, -105, 0));
+
                 GameObject actorSpr = showSpritePart(headActor.getUnitTex(), new Vector3(0, 0, 0));
-                NewBGs.addText($"Title: {headActor.title}", contents, 10, new Vector3(130, -95, 0));
+                NewBGs.addText($"Title: {headActor.title}", contents, 10, new Vector3(130, -115, 0));
                 NewBGs.addText($"Traits:", contents, 10, new Vector3(70, -115, 0));
                 int Ypos = 0;
                 foreach(string trait in headActor.traitIds)
@@ -81,10 +83,10 @@ namespace FamilyTreeMod
                     NewBGs.addText(trait, contents, 8, new Vector3(70, -130+(Ypos*-10), 0));
                     Ypos++;
                 }
-                NewBGs.addText($"Stats:", contents, 10, new Vector3(190, -115, 0));
-                NewBGs.addText($"Kills: {headActor.kills}", contents, 8, new Vector3(190, -125, 0));
-                NewBGs.addText($"Age: {headActor.age}", contents, 8, new Vector3(190, -135, 0));
-                NewBGs.addText($"Level: {headActor.level}", contents, 8, new Vector3(190, -145, 0));
+                NewBGs.addText($"Stats:", contents, 10, new Vector3(190, -135, 0));
+                NewBGs.addText($"Kills: {headActor.kills}", contents, 8, new Vector3(190, -145, 0));
+                NewBGs.addText($"Age: {headActor.age}", contents, 8, new Vector3(190, -155, 0));
+                NewBGs.addText($"Level: {headActor.level}", contents, 8, new Vector3(190, -165, 0));
                 Ypos = 0;
                 foreach(FieldInfo field in headActor.curStats.GetType().GetFields())
                 {
@@ -92,7 +94,7 @@ namespace FamilyTreeMod
                     {
                         continue;
                     }
-                    NewBGs.addText($"{field.Name}: {field.GetValue(headActor.curStats).ToString()}", contents, 8, new Vector3(190, -155+(Ypos*-10), 0));
+                    NewBGs.addText($"{field.Name}: {field.GetValue(headActor.curStats).ToString()}", contents, 8, new Vector3(190, -175+(Ypos*-10), 0));
                     Ypos++;
                 }
             }

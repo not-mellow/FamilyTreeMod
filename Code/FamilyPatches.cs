@@ -86,8 +86,8 @@ namespace FamilyTreeMod
             Actor randomParent2 = null;
             if (hasFamilyComponent)
             {
-                bool childrenOptionBool = int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) > 0;
-                if (randomParent.data.children > int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) && childrenOptionBool)
+                bool childrenOptionBool = int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) >= 0;
+                if (randomParent.data.children >= int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) && childrenOptionBool)
                 {
                     __result = false;
                     return false;
@@ -101,7 +101,7 @@ namespace FamilyTreeMod
                     randomParent2 = NewActions.getActorByIndex(firstFamily.loverID, firstFamily.familyIndex);
                 }
 
-                if (randomParent2 == null || (randomParent2.data.children > int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) && childrenOptionBool))
+                if (randomParent2 == null || (randomParent2.data.children >= int.Parse(SettingsWindow.inputOptions["ChildrenOption"]) && childrenOptionBool))
                 {
                     __result = false;
                     return false;
@@ -271,13 +271,6 @@ namespace FamilyTreeMod
         {
             if (FamilyOverviewWindow.unbornActorList.ContainsKey(pSaveData.status))
             {
-                // int flag = int.Parse(SettingsWindow.inputOptions["ChildrenOption"]);
-                // if (flag > 0 && firstFamily.childrenID.Count > flag)
-                // {
-                //     Debug.Log($"MAX CHILDREN: {firstFamily.childrenID.Count}");
-                //     __result = false;
-                //     return false;
-                // }
                 UnbornActor unbornInfo = FamilyOverviewWindow.unbornActorList[pSaveData.status];
                 FamilyActor actorFamily = __result.gameObject.AddComponent<FamilyActor>();
                 actorFamily.copyFamily(null, unbornInfo);
@@ -324,6 +317,14 @@ namespace FamilyTreeMod
                 else
                 {
                     __result.data.firstName = __result.getName() + " " + actorFamily.founderName;
+                }
+
+                if (fatherActor != null && !string.IsNullOrEmpty(fatherName))
+                {
+                    if (FamilyActor.getFamily(fatherActor).childrenID.Count == 1)
+                    {
+                        __result.data.firstName = fatherName + " II";
+                    }
                 }
 
                 FamilyOverviewWindow.deadActorList.Add(
@@ -485,7 +486,7 @@ namespace FamilyTreeMod
                 actorFamily.refreshHeir(__instance);
             }
             Family family = FamilyOverviewWindow.families[actorFamily.familyIndex.ToString()];
-            actorFamily.actorDied(__instance, family/*, actorFamily*/);
+            actorFamily.actorDied(__instance, family, pType);
 
             return true;
         }

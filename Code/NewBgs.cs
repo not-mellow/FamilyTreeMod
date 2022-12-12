@@ -210,14 +210,6 @@ namespace FamilyTreeMod
 
         public static GameObject createSideButton(GameObject parent, int posY, Vector2 iconSize, string iconName, string buttonName, string buttonDesc)
         {
-            // GameObject buttonGO = new GameObject("SideButton");
-            // buttonGO.transform.SetParent(parent.transform);
-            // RectTransform buttonRect = buttonGO.AddComponent<RectTransform>();
-            // buttonRect.localPosition = new Vector3(118, posY, 0);
-            // Button buttonButton = buttonGO.AddComponent<Button>();
-            // Image buttonImage = buttonGO.AddComponent<Image>();
-            // buttonImage.sprite = Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.UI.backgroundTabButton.png");
-
             PowerButton button = PowerButtons.CreateButton(
                 buttonName,
                 Mod.EmbededResources.LoadSprite($"FamilyTreeMod.Resources.Icons.{iconName}.png"),
@@ -233,6 +225,28 @@ namespace FamilyTreeMod
             buttonBG.sprite = Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.UI.backgroundTabButton.png");
 
             return button.gameObject;
+        }
+
+        public static GameObject createFamilyElement(GameObject parent, Family familyValue, int posX, int posY)
+        {
+            Actor head = NewActions.getActorByIndex(familyValue.HEADID, familyValue.index);
+            GameObject familyHolder = new GameObject("familyHolder");
+            familyHolder.transform.SetParent(parent.transform);
+            RectTransform familyRect = familyHolder.AddComponent<RectTransform>();
+            familyRect.localPosition = new Vector3(50 + (posX*40), -30 + (posY*-40), 0);
+
+            GameObject banner = null;
+            if (head != null)
+            {
+                banner = NewBGs.createBanner(familyHolder, head.kingdom, new Vector2(130, 130));
+            }
+            else
+            {
+                banner = NewBGs.createBanner(familyHolder, null, new Vector2(130, 130));
+            }
+            NewBGs.createAvatar(head, familyHolder, 20, new Vector3(20, -30, 0));
+            NewBGs.addText(familyValue.founderName, familyHolder, 20, new Vector3(0, -50, 0));
+            return familyHolder;
         }
 
         public static GameObject createAvatarBG(GameObject parent, Vector2 size, Vector3 pos)
@@ -265,7 +279,7 @@ namespace FamilyTreeMod
                 new Vector2(118, posY),
                 ButtonType.Click,
                 parent.transform,
-                FamilyInspectWindow.openWindow
+                null
             );
 
             Image buttonBG = button.gameObject.GetComponent<Image>();
