@@ -50,8 +50,8 @@ namespace FamilyTreeMod
                     posY++;
                 }
                 GameObject familyHolder = NewBGs.createFamilyElement(WindowManager.windowContents["familyOverview"], kv.Value, posX, posY);
-                familyHolder.transform.Find("bannerHolder").GetComponent<Button>().onClick.AddListener(() => RelationsWindow.openWindow(familyValue));
-                
+                familyHolder.transform.Find("bannerHolder").GetComponent<Button>().onClick.AddListener(() => RelationsWindow.openWindow(kv.Value));
+
                 GameObject deleteUI = new GameObject("deleteButton");
                 deleteUI.transform.SetParent(familyHolder.transform);
                 Image deleteImg = deleteUI.AddComponent<Image>();

@@ -95,12 +95,16 @@ namespace FamilyTreeMod
             contentRect.sizeDelta = originalContentSize;
             currentFamily = family;
             currentHead = head;
-            string founderID = "";
-            if (family.prevHeads.Count > 0)
+            string IDsetup = "";
+            if (family.prevHeads.Count > 0 && head == null)
             {
-                founderID = family.prevHeads[0];
+                IDsetup = family.prevHeads[family.prevHeads.Count - 1];
             }
-            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], head, founderID, new Vector3(130, -80, 0), 4);
+            else
+            {
+                IDsetup = head.data.actorID;
+            }
+            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], head, IDsetup, new Vector3(130, -80, 0), 4);
             if (contentRect.sizeDelta.x > 200)
             {
                 structure.transform.localPosition = new Vector3((contentRect.sizeDelta.x/2)+100, -80, 0);
@@ -112,8 +116,6 @@ namespace FamilyTreeMod
         private static GameObject createFamilyStructure(GameObject parent, Actor actorSetup, string actorIDSetup, Vector3 pos, int increaseX)
         {
             Actor actor = null;
-            deadActor dead = null;
-            bool isDead = false;
             if (actorSetup != null)
             {
                 actor = actorSetup;
@@ -122,15 +124,11 @@ namespace FamilyTreeMod
             {
                 actor = NewActions.getActorByIndex(actorIDSetup, currentFamily.index);
             }
-            else if (actorIDSetup.Contains("dead"))
-            {
-                dead = FamilyOverviewWindow.deadActorList[actorIDSetup];
-                isDead = true;
-            }
 
-            GameObject structure = actorStructure(parent, actor, dead, actorIDSetup);
-            if (isDead)
+            GameObject structure = actorStructure(parent, actor, actorIDSetup);
+            if (actorIDSetup.Contains("dead"))
             {
+                deadActor dead = FamilyOverviewWindow.getDeadActor(actorIDSetup);
                 createChildrenStructure(structure, dead.childrenID, increaseX);
             }
             else
@@ -142,21 +140,22 @@ namespace FamilyTreeMod
             return structure;
         }
 
-        private static GameObject actorStructure(GameObject parent, Actor actor, deadActor dead, string actorID)
+        private static GameObject actorStructure(GameObject parent, Actor actor, string actorID)
         {
             GameObject structure = new GameObject("structureHolder");
             structure.transform.SetParent(parent.transform);
 
-            deadOrAliveActorBG(structure, actor, dead, new Vector3(-80, 0, 0), actorID);
+            GameObject tempObj = null;
+            deadOrAliveActorBG(structure, actorID, new Vector3(-80, 0, 0), ref tempObj);
 
             string loverID = null;
             if (actor != null)
             {
                 loverID = FamilyActor.getFamily(actor).loverID;
             }
-            else if (dead != null)
+            else if (actorID.Contains("dead"))
             {
-                loverID = dead.loverID;
+                loverID = FamilyOverviewWindow.getDeadActor(actorID).loverID;
             }
 
             if (loverID == null)
@@ -164,39 +163,33 @@ namespace FamilyTreeMod
                 return structure;
             }
             Vector3 loverPos = new Vector3(80, 0, 0);
-            if (loverID.Contains("dead"))
-            {
-                deadActor deadLover = FamilyOverviewWindow.deadActorList[loverID];
-                deadOrAliveActorBG(structure, null, deadLover, loverPos, loverID);
-            }
-            else
-            {
-                Actor lover = NewActions.getActorByIndex(loverID, currentFamily.index);
-                deadOrAliveActorBG(structure, lover, null, loverPos);
-            }
+            deadOrAliveActorBG(structure, loverID, loverPos, ref tempObj);
 
             return structure;
         }
 
-        private static GameObject deadOrAliveActorBG(GameObject parent, Actor actor, deadActor dead, Vector3 pos, string deadID = null/*, ref newChildrenID*/)
+        private static List<string> deadOrAliveActorBG(GameObject parent, string actorID, Vector3 pos, ref GameObject actorBG)
         {
-            GameObject actorBG = null;
-            if (actor != null && actor.data.alive)
+            List<string> newChildrenID = null;
+            if (!string.IsNullOrEmpty(actorID) && !actorID.Contains("dead"))
             {
+                Actor actor = MapBox.instance.getActorByID(actorID);
                 actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
                 NewBGs.createAvatar(actor, actorBG, 30, new Vector3(0, -30, 0));
                 GameObject name = actorBG.transform.GetChild(0).gameObject;
                 addSizedText(actor.getName(), name, 20, new Vector3(0, 0, 0));
+                newChildrenID = FamilyActor.getFamily(actor).childrenID;
             }
-            else if (dead != null)
+            else if (actorID.Contains("dead"))
             {
+                deadActor dead = FamilyOverviewWindow.getDeadActor(actorID);
                 actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
-                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), deadID);
+                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), actorID);
                 GameObject name = actorBG.transform.GetChild(0).gameObject;
                 addSizedText(dead.name, name, 20, new Vector3(0, 0, 0));
-                // newChildrenID = childDead.childrenID;
+                newChildrenID = dead.childrenID;
             }
-            return actorBG;
+            return newChildrenID;
         }
 
         private static void createChildrenStructure(GameObject parent, List<string> childrenID, int increaseX)
@@ -211,27 +204,29 @@ namespace FamilyTreeMod
             {
                 List<string> newChildrenID = new List<string>();
                 GameObject childBG = null;
-                if (childID.Contains("dead"))
-                {
-                    deadActor childDead = FamilyOverviewWindow.deadActorList[childID];
-                    childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
-                    NewBGs.createAvatar(null, childBG, 30, new Vector3(0, -30, 0), childID);
-                    GameObject name = childBG.transform.GetChild(0).gameObject;
-                    addSizedText(childDead.name/*childID*/, name, 20, new Vector3(0, 0, 0));
-                    newChildrenID = childDead.childrenID;
-                }
-                else
-                {
-                    Actor child = NewActions.getActorByIndex(childID, currentFamily.index);
-                    childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
-                    NewBGs.createAvatar(child, childBG, 30, new Vector3(0, -30, 0));
-                    if (child != null)
-                    {
-                        GameObject name = childBG.transform.GetChild(0).gameObject;
-                        addSizedText(child.getName()/*childID*/, name, 20, new Vector3(0, 0, 0));
-                        newChildrenID = FamilyActor.getFamily(child).childrenID;
-                    }
-                }
+
+                newChildrenID = deadOrAliveActorBG(parent, childID, new Vector3(posX*-120, -130, 0), ref childBG);
+                // if (childID.Contains("dead"))
+                // {
+                //     deadActor childDead = FamilyOverviewWindow.deadActorList[childID];
+                //     childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
+                //     NewBGs.createAvatar(null, childBG, 30, new Vector3(0, -30, 0), childID);
+                //     GameObject name = childBG.transform.GetChild(0).gameObject;
+                //     addSizedText(childDead.name/*childID*/, name, 20, new Vector3(0, 0, 0));
+                //     newChildrenID = childDead.childrenID;
+                // }
+                // else
+                // {
+                //     Actor child = NewActions.getActorByIndex(childID, currentFamily.index);
+                //     childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
+                //     NewBGs.createAvatar(child, childBG, 30, new Vector3(0, -30, 0));
+                //     if (child != null)
+                //     {
+                //         GameObject name = childBG.transform.GetChild(0).gameObject;
+                //         addSizedText(child.getName()/*childID*/, name, 20, new Vector3(0, 0, 0));
+                //         newChildrenID = FamilyActor.getFamily(child).childrenID;
+                //     }
+                // }
 
                 if (newChildrenID.Count > 0)
                 {

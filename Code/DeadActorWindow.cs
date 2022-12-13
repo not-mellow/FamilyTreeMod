@@ -116,7 +116,6 @@ namespace FamilyTreeMod
             image.rectTransform.SetAnchor(AnchorPresets.BottonCenter, 0f, 0f);
             float x = /*image.sprite.pivot.x*/5 / image.sprite.textureRect.width;
             float y = /*image.sprite.pivot.y*/0 / image.sprite.textureRect.height;
-            Debug.Log($"x:{image.sprite.textureRect.width} / y:{image.sprite.textureRect.height}");
             image.rectTransform.pivot = new Vector2(/*0.5f*/x, 0);
             image.rectTransform.anchoredPosition = pPos;
             // image.rectTransform.localPosition = pPos;

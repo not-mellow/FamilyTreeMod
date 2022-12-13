@@ -112,7 +112,7 @@ namespace FamilyTreeMod
                     posY++;
                 }
                 GameObject familyHolder = NewBGs.createFamilyElement(WindowManager.windowContents["familyInspectWindow"], kv.Value, posX, posY);
-                familyHolder.transform.Find("bannerHolder").GetComponent<Button>().onClick.AddListener(() => RelationsWindow.openWindow(familyValue));
+                familyHolder.transform.Find("bannerHolder").GetComponent<Button>().onClick.AddListener(() => RelationsWindow.openWindow(kv.Value));
                 posX++;
             }
         }
