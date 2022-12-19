@@ -58,16 +58,19 @@ namespace FamilyTreeMod
                 return null;
             }
 
-            Family family = (Family)FamilyOverviewWindow.families[index.ToString()];
-            foreach(Actor actor in family.actors)
+            Family family = FamilyOverviewWindow.getFromFamilies(ref index);
+            if (family != null)
             {
-                if (actor == null)
+                foreach(Actor actor in family.actors)
                 {
-                    continue;
-                }
-                if (actor.data.actorID == id)
-                {
-                    return actor;
+                    if (actor == null)
+                    {
+                        continue;
+                    }
+                    if (actor.data.actorID == id)
+                    {
+                        return actor;
+                    }
                 }
             }
 

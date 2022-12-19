@@ -25,11 +25,23 @@ namespace FamilyTreeMod
         public static Dictionary<ActorStatus, UnbornActor> unbornActorList = new Dictionary<ActorStatus, UnbornActor>();
         public static Dictionary<string, deadActor> deadActorList = new Dictionary<string, deadActor>();
         public static Dictionary<Kingdom, Family> kingdomFamilies = new Dictionary<Kingdom, Family>();
+        public static Dictionary<City, Family> cityFamilies = new Dictionary<City, Family>();
         public static Dictionary<string, ActorHead> headInfoList = new Dictionary<string, ActorHead>();
         public static int curID = 0;
 
         public static void openWindow()
         {
+            // Debug.Log("Kingdom Families:");
+            // foreach(KeyValuePair<Kingdom, Family> kv in kingdomFamilies)
+            // {
+            //     Debug.Log($"{kv.Key.name} / {kv.Value.founderName}");
+            // }
+            // Debug.Log("City Families:");
+            // foreach(KeyValuePair<City, Family> kv in cityFamilies)
+            // {
+            //     Debug.Log($"{kv.Key.data.cityName} / {kv.Value.founderName}");
+            // }
+
             foreach(Transform child in WindowManager.windowContents["familyOverview"].transform)
             {
                 Destroy(child.gameObject);

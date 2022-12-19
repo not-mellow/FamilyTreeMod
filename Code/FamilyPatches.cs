@@ -45,14 +45,14 @@ namespace FamilyTreeMod
             
             harmony.Patch(
                 AccessTools.Method(typeof(KingdomBehCheckKing), "findKing"),
-                prefix: new HarmonyMethod(AccessTools.Method(typeof(FamilyPatches), "findKing_Prefix")),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(FamilyPatches), "findKing_Postfix"))
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(FamilyPatches), "findKing_Prefix"))
+                // postfix: new HarmonyMethod(AccessTools.Method(typeof(FamilyPatches), "findKing_Postfix"))
             );
 
-            // patchMethod(
-            //     AccessTools.Method(typeof(CityBehFindLeader), "execute"),
-            //     AccessTools.Method(typeof(FamilyPatches), "findLeader_Prefix"),
-            //     true);
+            patchMethod(
+                AccessTools.Method(typeof(CityBehFindLeader), "execute"),
+                AccessTools.Method(typeof(FamilyPatches), "findLeader_Prefix"),
+                true);
         }
 
         public static void patchMethod(MethodInfo original, MethodInfo patch, bool isPrefix)
@@ -421,12 +421,8 @@ namespace FamilyTreeMod
                 FamilyActor.getFamily(father).removeChild(prevActor, prevActor.data.actorID);
                 FamilyActor.getFamily(father).addChild(newActor, newActor.data.actorID, prevActorFamily.isHead, newActorFamily.deadID);
             }
-            else 
+            else if (newActorFamily.deadFatherID != null)
             {
-                if (!FamilyOverviewWindow.deadActorList.ContainsKey(newActorFamily.deadFatherID))
-                {
-                    Debug.Log(newActorFamily.deadFatherID);
-                }
                 deadActor deadFather = FamilyOverviewWindow.deadActorList[newActorFamily.deadFatherID];
                 deadFather.removeChild(prevActor, prevActor.data.actorID);
                 deadFather.addChild(newActor, newActor.data.actorID, prevActorFamily.isHead, newActorFamily.deadID);
@@ -439,7 +435,7 @@ namespace FamilyTreeMod
                 FamilyActor.getFamily(mother).removeChild(prevActor, prevActor.data.actorID);
                 FamilyActor.getFamily(mother).addChild(newActor, newActor.data.actorID, prevActorFamily.isHead, newActorFamily.deadID);
             }
-            else
+            else if (newActorFamily.deadMotherID != null)
             {
                 deadActor deadMother = FamilyOverviewWindow.deadActorList[newActorFamily.deadMotherID];
                 deadMother.removeChild(prevActor, prevActor.data.actorID);
@@ -457,13 +453,11 @@ namespace FamilyTreeMod
             {
                 curFamily.heirID = newActor.data.actorID;
                 newActorFamily.isHeir = true;
-                // Debug.Log($"Heir Grew Up: {curFamily.heirID}");
             }
             if (prevActorFamily.isHead)
             {
                 curFamily.HEADID = newActor.data.actorID;
                 newActorFamily.isHead = true;
-                // Debug.Log($"Head Grew Up: {curFamily.HEADID}");
             }
 
             FamilyOverviewWindow.deadActorList[newActorFamily.deadID] = new deadActor().copyFamily(newActorFamily, newActor.getName());
@@ -493,17 +487,64 @@ namespace FamilyTreeMod
 
         public static bool findKing_Prefix(Kingdom pKingdom, KingdomBehCheckKing __instance)
         {
+            List<Kingdom> kingdomsToRemove = new List<Kingdom>();
+            foreach(KeyValuePair<Kingdom, Family> kv in FamilyOverviewWindow.kingdomFamilies)
+            {
+                if (!kv.Key.alive)
+                {
+                    kingdomsToRemove.Add(kv.Key);
+                }
+            }
+            foreach(Kingdom kdom in kingdomsToRemove)
+            {
+                Family familyRemoved = FamilyOverviewWindow.kingdomFamilies[kdom];
+                FamilyOverviewWindow.kingdomFamilies.Remove(kdom);
+            } 
+
             if (!FamilyOverviewWindow.kingdomFamilies.ContainsKey(pKingdom))
             {
+                foreach (KeyValuePair<string, Family> kv in FamilyOverviewWindow.families)
+                {
+                    Actor head = NewActions.getActorByIndex(kv.Value.HEADID, kv.Value.index);
+                    if (head == null || head.kingdom == null || FamilyOverviewWindow.cityFamilies.ContainsValue(kv.Value))
+                    {
+                        continue;
+                    }
+                    if (head.kingdom == pKingdom)
+                    {
+                        FamilyOverviewWindow.kingdomFamilies.Add(pKingdom, kv.Value);
+                        makeIntoKing(head, pKingdom);
+                        return false;
+                    }
+                }
                 return true;
             }
             Family thisFamily = FamilyOverviewWindow.kingdomFamilies[pKingdom];
             Actor actor = MapBox.instance.getActorByID(thisFamily.HEADID);
-		    if (actor == null)
+            if ((actor == null && thisFamily.actors.Count <= 0) || (actor != null && actor.kingdom != pKingdom) || FamilyOverviewWindow.cityFamilies.ContainsValue(thisFamily))
+            {
+                FamilyOverviewWindow.kingdomFamilies.Remove(pKingdom);
+                return false;
+            }
+
+            makeIntoKing(actor, pKingdom);
+
+            if (actor != null && actor.city != pKingdom.capital)
+            {
+                actor.city.units.Remove(actor);
+                actor.city.setStatusDirty();
+                actor.city.unitsDirty = true;
+                pKingdom.capital.addNewUnit(actor, false);
+            }
+            return false;
+        }
+
+        private static void makeIntoKing(Actor actor, Kingdom pKingdom)
+        {
+            if (actor == null)
 			{
-				return false;
+				return;
 			}
-			__instance._units.Remove(actor);
 			if (actor.city.leader == actor)
 			{
 				actor.city.removeLeader();
@@ -514,57 +555,86 @@ namespace FamilyTreeMod
             }
 			pKingdom.setKing(actor);
 			WorldLog.logNewKing(pKingdom);
-            Debug.Log("hi");
-            return false;
         }
 
         public static void findKing_Postfix(Kingdom pKingdom)
-        {   
-            if (pKingdom.king == null)
-            {
-                return;
-            }
-            bool kingToCapital = true;
-            FamilyActor actorFamily = FamilyActor.getFamily(pKingdom.king);
-            if (FamilyOverviewWindow.kingdomFamilies.ContainsKey(pKingdom))
-            {
-                if (actorFamily == null)
-                {
-                    FamilyOverviewWindow.kingdomFamilies.Remove(pKingdom);
-                    return;
-                }
-                if (pKingdom != pKingdom.king.kingdom)
-                {
-                    FamilyOverviewWindow.kingdomFamilies.Remove(pKingdom);
-                    pKingdom.removeKing();
-                    Debug.Log("Removed King Cuz Not Same Kingdom");
-                    return;
-                }
-                Family thisFamily = FamilyOverviewWindow.kingdomFamilies[pKingdom];
-                bool withinFamily = 
-                FamilyOverviewWindow.families[actorFamily.familyIndex.ToString()] == thisFamily ||
-                FamilyOverviewWindow.families[actorFamily.fatherFamilyIndex.ToString()] == thisFamily ||
-                FamilyOverviewWindow.families[actorFamily.motherFamilyIndex.ToString()] == thisFamily;
-
-                if (!withinFamily)
-                {
-                    FamilyOverviewWindow.kingdomFamilies.Remove(pKingdom);
-                }
-            }
-            else if (!FamilyOverviewWindow.kingdomFamilies.ContainsKey(pKingdom) && actorFamily != null)
-            {
-                FamilyOverviewWindow.kingdomFamilies.Add(pKingdom, FamilyOverviewWindow.families[actorFamily.familyIndex.ToString()]);
-            }
-
-            if (kingToCapital)
-            {
-                pKingdom.capital.addNewUnit(pKingdom.king, false);
-            }
+        { 
+            return;
         }
 
-        public static bool findLeader_Prefix(City pCity)
+        public static bool findLeader_Prefix(City pCity, ref BehResult __result)
         {
-           
+            List<City> citiesToRemove = new List<City>();
+            foreach(KeyValuePair<City, Family> kv in FamilyOverviewWindow.cityFamilies)
+            {
+                if (!kv.Key.alive)
+                {
+                    citiesToRemove.Add(kv.Key);
+                }
+            }
+            foreach(City city in citiesToRemove)
+            {
+                FamilyOverviewWindow.cityFamilies.Remove(city);
+            } 
+
+			// if (pCity.leader != null)
+			// {
+			// 	__result = BehResult.Continue;
+            //     return false;
+			// }
+			if (pCity.captureTicks > 0f)
+			{
+				__result = BehResult.Continue;
+                return false;
+			}
+            if (!FamilyOverviewWindow.cityFamilies.ContainsKey(pCity) && pCity.kingdom.king != null)
+            {
+                foreach(KeyValuePair<string, Family> kv in FamilyOverviewWindow.families)
+                {
+                    Actor head = NewActions.getActorByIndex(kv.Value.HEADID, kv.Value.index);
+                    if (head == null || !head.data.alive || head.city == null || FamilyOverviewWindow.kingdomFamilies.ContainsValue(kv.Value))
+                    {
+                        continue;
+                    }
+                    if (pCity.leader == head)
+                    {
+                        FamilyOverviewWindow.cityFamilies.Add(pCity, kv.Value);
+                        __result = BehResult.Continue;
+                        return false;
+                    }
+                    if (head.city == pCity)
+                    {
+                        FamilyOverviewWindow.cityFamilies.Add(pCity, kv.Value);
+                        City.makeLeader(head, pCity);
+                        __result = BehResult.Continue;
+                        return false;
+                    }
+                }
+                __result = BehResult.Continue;
+                return true;
+            }
+            else if (pCity.kingdom.king == null)
+            {
+                __result = BehResult.Continue;
+                return true;
+            }
+
+            Family thisFamily = FamilyOverviewWindow.cityFamilies[pCity];
+            Actor actor = NewActions.getActorByIndex(thisFamily.HEADID, thisFamily.index);
+            if (pCity.leader == actor)
+            {
+                __result = BehResult.Continue;
+                return false;
+            }
+			if ((actor == null && thisFamily.actors.Count <= 0) || (actor != null && actor.city != pCity) || FamilyOverviewWindow.kingdomFamilies.ContainsValue(thisFamily))
+			{
+                FamilyOverviewWindow.cityFamilies.Remove(pCity);
+                __result = BehResult.Continue;
+                return false;
+			}
+
+            City.makeLeader(actor, pCity);
+			__result = BehResult.Continue;
             return false;
         }
     }

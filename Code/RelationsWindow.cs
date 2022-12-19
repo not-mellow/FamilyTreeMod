@@ -125,6 +125,23 @@ namespace FamilyTreeMod
 
             currentFamily = family;
 
+            // clean actors list
+            List<Actor> actorsToRemove = new List<Actor>();
+            foreach (Actor cActor in family.actors)
+            {
+                if (cActor == null || !cActor.data.alive)
+                {
+                    actorsToRemove.Add(cActor);
+                }
+                if (FamilyActor.getFamily(cActor) == null)
+                {
+                    actorsToRemove.Add(cActor);
+                }
+            }
+            foreach(Actor dActor in actorsToRemove)
+            {
+                family.actors.Remove(dActor);
+            }
             string labels = @"
             Current Head:
 

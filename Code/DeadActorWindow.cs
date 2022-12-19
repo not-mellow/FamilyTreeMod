@@ -72,7 +72,7 @@ namespace FamilyTreeMod
             }
             if (headActor != null)
             {
-                NewBGs.addText($"Cause Of Death: {headActor.getDeathCause()}", contents, 5, new Vector3(130, -105, 0));
+                NewBGs.addText($"Cause Of Death: {headActor.getDeathCause()}", contents, 5, new Vector3(130, -100, 0));
 
                 GameObject actorSpr = showSpritePart(headActor.getUnitTex(), new Vector3(0, 0, 0));
                 NewBGs.addText($"Title: {headActor.title}", contents, 10, new Vector3(130, -115, 0));
@@ -104,6 +104,10 @@ namespace FamilyTreeMod
 
         private static GameObject showSpritePart(Sprite pSprite, Vector3 pPos)
         {
+            if (pSprite == null)
+            {
+                return null;
+            }
             GameObject avatarLoader = new GameObject("avatarLoader");
             avatarLoader.transform.SetParent(contents.transform);
             avatarLoader.transform.localPosition = new Vector3(60, -80, 0);

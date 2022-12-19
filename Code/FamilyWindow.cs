@@ -62,7 +62,7 @@ namespace FamilyTreeMod
             newZoom = new Vector3(Mathf.Clamp(newZoom.x, 0.15f, 0.8f), Mathf.Clamp(newZoom.y, 0.15f, 0.8f), 0);
             obj.localScale = newZoom;
             currentZoom = newZoom;
-            contentRect.localPosition = new Vector3(contentRect.sizeDelta.x/-2, contentRect.localPosition.x, contentRect.localPosition.y);
+            contentRect.localPosition = new Vector3((contentRect.sizeDelta.x/-2)+50, contentRect.localPosition.x, contentRect.localPosition.y);
         }
 
         public static void openFounderWindow(Family family)
@@ -74,7 +74,7 @@ namespace FamilyTreeMod
             contentRect.sizeDelta = originalContentSize;
             currentFamily = family;
 
-            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], null, family.founderID, new Vector3(130, -80, 0), 4);
+            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], null, family.founderID, new Vector3(130, -80, 0));
             if (contentRect.sizeDelta.x > 200)
             {
                 structure.transform.localPosition = new Vector3((contentRect.sizeDelta.x/2)+100, -80, 0);
@@ -104,16 +104,17 @@ namespace FamilyTreeMod
             {
                 IDsetup = head.data.actorID;
             }
-            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], head, IDsetup, new Vector3(130, -80, 0), 4);
+            GameObject structure = createFamilyStructure(WindowManager.windowContents["familyWindow"], head, IDsetup, new Vector3(130, -80, 0));
             if (contentRect.sizeDelta.x > 200)
             {
                 structure.transform.localPosition = new Vector3((contentRect.sizeDelta.x/2)+100, -80, 0);
                 contentRect.localPosition = new Vector3(contentRect.sizeDelta.x/-2, contentRect.localPosition.x, contentRect.localPosition.y);
             }
+            structure.transform.localScale = currentZoom;
             Windows.ShowWindow("familyWindow");
         }
 
-        private static GameObject createFamilyStructure(GameObject parent, Actor actorSetup, string actorIDSetup, Vector3 pos, int increaseX)
+        public static GameObject createFamilyStructure(GameObject parent, Actor actorSetup, string actorIDSetup, Vector3 pos)
         {
             Actor actor = null;
             if (actorSetup != null)
@@ -129,11 +130,11 @@ namespace FamilyTreeMod
             if (actorIDSetup.Contains("dead"))
             {
                 deadActor dead = FamilyOverviewWindow.getDeadActor(actorIDSetup);
-                createChildrenStructure(structure, dead.childrenID, increaseX);
+                createChildrenStructure(structure, dead.childrenID);
             }
-            else
+            else if (actor != null)
             {
-                createChildrenStructure(structure, FamilyActor.getFamily(actor).childrenID, increaseX);
+                createChildrenStructure(structure, FamilyActor.getFamily(actor).childrenID);
             }
             structure.transform.localScale = new Vector3(1, 1, 0);
             structure.transform.localPosition = pos;
@@ -146,7 +147,7 @@ namespace FamilyTreeMod
             structure.transform.SetParent(parent.transform);
 
             GameObject tempObj = null;
-            deadOrAliveActorBG(structure, actorID, new Vector3(-80, 0, 0), ref tempObj);
+            NewBGs.deadOrAliveActorBG(structure, actorID, new Vector3(-80, 0, 0), ref tempObj);
 
             string loverID = null;
             if (actor != null)
@@ -163,38 +164,14 @@ namespace FamilyTreeMod
                 return structure;
             }
             Vector3 loverPos = new Vector3(80, 0, 0);
-            deadOrAliveActorBG(structure, loverID, loverPos, ref tempObj);
+            NewBGs.deadOrAliveActorBG(structure, loverID, loverPos, ref tempObj);
 
             return structure;
         }
 
-        private static List<string> deadOrAliveActorBG(GameObject parent, string actorID, Vector3 pos, ref GameObject actorBG)
+        private static void createChildrenStructure(GameObject parent, List<string> childrenID)
         {
-            List<string> newChildrenID = null;
-            if (!string.IsNullOrEmpty(actorID) && !actorID.Contains("dead"))
-            {
-                Actor actor = MapBox.instance.getActorByID(actorID);
-                actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
-                NewBGs.createAvatar(actor, actorBG, 30, new Vector3(0, -30, 0));
-                GameObject name = actorBG.transform.GetChild(0).gameObject;
-                addSizedText(actor.getName(), name, 20, new Vector3(0, 0, 0));
-                newChildrenID = FamilyActor.getFamily(actor).childrenID;
-            }
-            else if (actorID.Contains("dead"))
-            {
-                deadActor dead = FamilyOverviewWindow.getDeadActor(actorID);
-                actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
-                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), actorID);
-                GameObject name = actorBG.transform.GetChild(0).gameObject;
-                addSizedText(dead.name, name, 20, new Vector3(0, 0, 0));
-                newChildrenID = dead.childrenID;
-            }
-            return newChildrenID;
-        }
-
-        private static void createChildrenStructure(GameObject parent, List<string> childrenID, int increaseX)
-        {
-            if (childrenID.Count > increaseX && contentRect.sizeDelta.x <= 2000)
+            if (childrenID.Count > 2 && contentRect.sizeDelta.x <= 2000)
             {
                 int increaseSize = 1 + (childrenID.Count/2);
                 contentRect.sizeDelta += new Vector2(increaseSize*70, 0);
@@ -205,28 +182,7 @@ namespace FamilyTreeMod
                 List<string> newChildrenID = new List<string>();
                 GameObject childBG = null;
 
-                newChildrenID = deadOrAliveActorBG(parent, childID, new Vector3(posX*-120, -130, 0), ref childBG);
-                // if (childID.Contains("dead"))
-                // {
-                //     deadActor childDead = FamilyOverviewWindow.deadActorList[childID];
-                //     childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
-                //     NewBGs.createAvatar(null, childBG, 30, new Vector3(0, -30, 0), childID);
-                //     GameObject name = childBG.transform.GetChild(0).gameObject;
-                //     addSizedText(childDead.name/*childID*/, name, 20, new Vector3(0, 0, 0));
-                //     newChildrenID = childDead.childrenID;
-                // }
-                // else
-                // {
-                //     Actor child = NewActions.getActorByIndex(childID, currentFamily.index);
-                //     childBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), new Vector3(posX*-120, -130, 0));
-                //     NewBGs.createAvatar(child, childBG, 30, new Vector3(0, -30, 0));
-                //     if (child != null)
-                //     {
-                //         GameObject name = childBG.transform.GetChild(0).gameObject;
-                //         addSizedText(child.getName()/*childID*/, name, 20, new Vector3(0, 0, 0));
-                //         newChildrenID = FamilyActor.getFamily(child).childrenID;
-                //     }
-                // }
+                newChildrenID = NewBGs.deadOrAliveActorBG(parent, childID, new Vector3(posX*-120, -130, 0), ref childBG);
 
                 if (newChildrenID.Count > 0)
                 {
@@ -243,30 +199,26 @@ namespace FamilyTreeMod
 
                     RectTransform childBGRect = childBG.GetComponent<RectTransform>();
                     Vector3 structurePos = childBGRect.localPosition + childrenRect.localPosition + new Vector3(0, -100, 0);
-                    childrenButton.onClick.AddListener(() => createChildFamilyStructure(parent, null, childID, structurePos, 2));
+                    childrenButton.onClick.AddListener(() => createChildFamilyStructure(parent, null, childID, structurePos));
                 }
                 posX--;
             }
         }
 
-        private static void createChildFamilyStructure(GameObject parent, Actor actorSetup, string actorIDSetup, Vector3 pos, int increaseX)
+        private static void createChildFamilyStructure(GameObject parent, Actor actorSetup, string actorIDSetup, Vector3 pos)
         {
-            float gapMovedX = 0f;
             Transform firstHolder = WindowManager.windowContents["familyWindow"].transform.Find("structureHolder");
-            if (firstHolder != null)
-            {
-                gapMovedX = firstHolder.localPosition.x - ((contentRect.sizeDelta.x/2)+100);
-                firstHolder.localPosition = new Vector3((contentRect.sizeDelta.x/2)+100, -80, 0);
-            }
+            float xDiff = ((contentRect.sizeDelta.x/2)+100) - firstHolder.localPosition.x;
+            firstHolder.localPosition = new Vector3((contentRect.sizeDelta.x/2)+100, -80, 0);
             Transform otherStructure = parent.transform.Find("structureHolder");
             if (otherStructure != null)
             {
                 Destroy(otherStructure.gameObject);
                 contentRect.sizeDelta -= new Vector2(0, 100);
             }
-            GameObject structure = createFamilyStructure(parent, actorSetup, actorIDSetup, pos, increaseX);
+            GameObject structure = createFamilyStructure(parent, actorSetup, actorIDSetup, pos);
             contentRect.sizeDelta += new Vector2(0, 100);
-            contentRect.position += new Vector3(gapMovedX, 0,  0);
+            contentRect.localPosition += new Vector3(-1*xDiff, 0,  0);
         }
 
         public static void openHeadHistoryWindow(Family family)
@@ -286,54 +238,18 @@ namespace FamilyTreeMod
             
             int gen = 1;
             int posY = family.prevHeads.Count;
-            GameObject currentHeadBG = NewBGs.createAvatarBG(WindowManager.windowContents["familyWindow"], new Vector2(100, 100), new Vector3(130, -60, 0));
-            Actor curHead = NewActions.getActorByIndex(family.HEADID, family.index);
-            if (curHead != null)
-            {
-                NewBGs.createAvatar(curHead, currentHeadBG, 30, new Vector3(0, -30, 0));
-
-                GameObject curHeadNameObj = currentHeadBG.transform.GetChild(0).gameObject;
-                addSizedText(curHead.getName(), curHeadNameObj, 20, new Vector3(0, 0, 0));
-            }
+            GameObject currentHeadBG = null;
+            NewBGs.deadOrAliveActorBG(WindowManager.windowContents["familyWindow"], family.HEADID, new Vector3(130, -60, 0), ref currentHeadBG);
             NewBGs.addText($"Current Generation: ", currentHeadBG, 30, new Vector3(-200, -55, 0));
             foreach(string headID in family.prevHeads)
             {
-                GameObject headBG = NewBGs.createAvatarBG(currentHeadBG, new Vector2(100, 100), new Vector3(0, (posY*-150), 0));
-                string actorName = "";
-                if (headID.Contains("dead"))
-                {
-                    deadActor deadHead = FamilyOverviewWindow.deadActorList[headID];
-                    NewBGs.createAvatar(null, headBG, 30, new Vector3(0, -30, 0), headID);
-                    actorName = deadHead.name;
-                }
-                else
-                {
-                    Actor head = NewActions.getActorByIndex(headID, currentFamily.index);
-                    NewBGs.createAvatar(head, headBG, 30, new Vector3(0, -30, 0));
-                    actorName = head.getName();
-                }
-                GameObject nameObj = headBG.transform.GetChild(0).gameObject;
-                addSizedText(actorName, nameObj, 20, new Vector3(0, 0, 0));
-
+                GameObject headBG = null;
+                NewBGs.deadOrAliveActorBG(currentHeadBG, headID, new Vector3(0, (posY*-150), 0), ref headBG);
                 NewBGs.addText($"Generation {gen.ToString()}: ", headBG, 30, new Vector3(-200, -45, 0));
                 posY--;
                 gen++;
             }
             Windows.ShowWindow("familyWindow");
-        }
-
-        private static Text addSizedText(string text, GameObject pObject, int size, Vector3 pos)
-        {
-            int newSize = size;
-            if (text.Length > 6 && text.Length < 11)
-            {
-                newSize = size - (text.Length - 6);
-            }
-            else if (text.Length >= 11)
-            {
-                newSize = size - 6;
-            }
-            return NewBGs.addText(text, pObject, newSize, pos);
         }
 
         public static int nextID()

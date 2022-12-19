@@ -17,3 +17,12 @@ Beta Version 0.4.7 - Bosses and Inheritance
 - Added Inspect window for inspecting individual unit's family and history (In Progress)
 - Added Cause of death in dead actor window
 - Reworked dead actor info only being saved for family heads for performance
+- Probably won't work for saves from previous versions
+- Not stable, many bugs
+
+Beta Version 0.4.8 - More Buttons!
+- Added side button that will show family heritage when inspecting an individual.
+- Improved king inheritance
+- Re-added city inheritance
+- Bunch of bug fixes
+- Might not work with saves on older versions

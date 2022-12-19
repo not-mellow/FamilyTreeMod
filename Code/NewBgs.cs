@@ -71,7 +71,7 @@ namespace FamilyTreeMod
 
         public static GameObject createAvatar(Actor actor, GameObject parent, int size, Vector3 pos, string deadID = null)
         {
-            if (actor == null)
+            if (actor == null || !actor.data.alive)
             {
                 var ghostObject = new GameObject("ghostAvatar");
                 ghostObject.transform.SetParent(parent.transform);
@@ -290,6 +290,43 @@ namespace FamilyTreeMod
             // buttonButton.onClick.AddListener(() => checkToggledIcon(toggleIcon, name));
 
             return buttonButton;
+        }
+
+        public static List<string> deadOrAliveActorBG(GameObject parent, string actorID, Vector3 pos, ref GameObject actorBG)
+        {
+            List<string> newChildrenID = new List<string>();
+            Actor actor = MapBox.instance.getActorByID(actorID);
+            actorBG = NewBGs.createAvatarBG(parent, new Vector2(100, 100), pos);
+            if (actor != null && actor.data.alive && FamilyActor.getFamily(actor) != null)
+            {
+                NewBGs.createAvatar(actor, actorBG, 30, new Vector3(0, -30, 0));
+                GameObject name = actorBG.transform.GetChild(0).gameObject;
+                addSizedText(actor.getName(), name, 20, new Vector3(0, 0, 0));
+                newChildrenID = FamilyActor.getFamily(actor).childrenID;
+            }
+            else if (actorID != null && actorID.Contains("dead"))
+            {
+                deadActor dead = FamilyOverviewWindow.getDeadActor(actorID);
+                NewBGs.createAvatar(null, actorBG, 30, new Vector3(0, -30, 0), actorID);
+                GameObject name = actorBG.transform.GetChild(0).gameObject;
+                addSizedText(dead.name, name, 20, new Vector3(0, 0, 0));
+                newChildrenID = dead.childrenID;
+            }
+            return newChildrenID;
+        }
+
+        public static Text addSizedText(string text, GameObject parent, int size, Vector3 pos)
+        {
+            int newSize = size;
+            if (text.Length > 6 && text.Length < 11)
+            {
+                newSize = size - (text.Length - 6);
+            }
+            else if (text.Length >= 11)
+            {
+                newSize = size - 6;
+            }
+            return NewBGs.addText(text, parent, newSize, pos);
         }
     }
 }

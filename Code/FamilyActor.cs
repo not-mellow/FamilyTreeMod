@@ -89,7 +89,6 @@ namespace FamilyTreeMod
                 FieldInfo thisField = sFamilyActor.GetType().GetField(prop.Name);
                 if (thisField == null)
                 {
-                    Debug.Log(prop.Name);
                     continue;
                 }
                 if (thisField.FieldType == typeof(string))
@@ -250,7 +249,11 @@ namespace FamilyTreeMod
                 Actor child = NewActions.getActorByIndex(childID, this.familyIndex, this.fatherFamilyIndex, this.motherFamilyIndex);
                 if (child == null)
                 {
-                    deadActor deadChild = FamilyOverviewWindow.deadActorList[childID];
+                    deadActor deadChild = FamilyOverviewWindow.getDeadActor(childID);
+                    if (deadChild == null)
+                    {
+                        continue;
+                    }
                     if (isMale)
                     {
                         deadChild.fatherID = this.deadID;
@@ -337,7 +340,6 @@ namespace FamilyTreeMod
             }
             else if (heirActor.kingdom != pActor.kingdom)
             {
-                Debug.Log("Heir does not have the same kingdom");
                 family.HEADID = null;
                 family.heirID = null;
                 this.refreshHead(pActor);
@@ -603,6 +605,8 @@ namespace FamilyTreeMod
         {
             secondIndex = (secondIndex == null) ? -1 : secondIndex;
             thirdIndex = (thirdIndex == null) ? -1 : thirdIndex;
+            Actor possibleResult = null;
+            FamilyActor possibleFamilyActor = null;
             foreach (string childID in childrenID)
             {
                 Actor child = NewActions.getActorByIndex(childID, this.index, secondIndex, thirdIndex);
@@ -615,16 +619,26 @@ namespace FamilyTreeMod
                 {
                     continue;
                 }
-                if (checkKingdom && kingdom != child.kingdom)
-                {
-                    continue;
-                }
                 if (parentID == childID)
                 {
                     continue;
                 }
+                if (checkKingdom && kingdom != child.kingdom)
+                {
+                    if (possibleResult == null)
+                    {
+                        possibleFamilyActor = childFamily;
+                        possibleResult = child;
+                    }
+                    continue;
+                }
                 childFamily.familyIndex = index;
                 return child;
+            }
+            if (possibleResult != null)
+            {
+                possibleFamilyActor.familyIndex = index;
+                return possibleResult;
             }
             
             foreach(Actor actor in this.actors)
@@ -638,11 +652,7 @@ namespace FamilyTreeMod
                     continue;
                 }
                 FamilyActor actorFamily = FamilyActor.getFamily(actor);
-                if ((actorFamily.isHeir && !isHeir) || (actorFamily.isHead && !isHead))
-                {
-                    continue;
-                }
-                if (checkKingdom && kingdom != actor.kingdom)
+                if (actorFamily == null || (actorFamily.isHeir && !isHeir) || (actorFamily.isHead && !isHead))
                 {
                     continue;
                 }
@@ -650,8 +660,22 @@ namespace FamilyTreeMod
                 {
                     continue;
                 }
+                if (checkKingdom && kingdom != actor.kingdom)
+                {
+                    if (possibleResult == null)
+                    {
+                        possibleFamilyActor = actorFamily;
+                        possibleResult = actor;
+                    }
+                    continue;
+                }
                 actorFamily.familyIndex = index;
                 return actor;
+            }
+            if (possibleResult != null)
+            {
+                possibleFamilyActor.familyIndex = index;
+                return possibleResult;
             }
             return null;
         }
@@ -796,7 +820,7 @@ namespace FamilyTreeMod
                 case AttackType.Tumor:
                     return "Tumor Infection - Did someone plant a mushroom farm here?";
                 case AttackType.Other:
-                    return "Either By Combat In Battle Or Trait/God Effect";
+                    return "Combat - Held a great last stand o7";
                 case AttackType.Hunger:
                     return "Starvation - They just wanted a sandwich.";
                 case AttackType.Eaten:
