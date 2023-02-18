@@ -76,32 +76,38 @@ namespace FamilyTreeMod
 
             if (secondIndex != -1)
             {
-                Family secondFamily = (Family)FamilyOverviewWindow.families[secondIndex.ToString()];
-                foreach(Actor actor in secondFamily.actors)
+                Family secondFamily = (Family)FamilyOverviewWindow.getFromFamilies(ref secondIndex);
+                if (secondFamily != null)
                 {
-                    if (actor == null)
+                    foreach(Actor actor in secondFamily.actors)
                     {
-                        continue;
-                    }
-                    if (actor.data.actorID == id)
-                    {
-                        return actor;
+                        if (actor == null)
+                        {
+                            continue;
+                        }
+                        if (actor.data.actorID == id)
+                        {
+                            return actor;
+                        }
                     }
                 }
             }
 
             if (thirdIndex != -1)
             {
-                Family thirdFamily = (Family)FamilyOverviewWindow.families[thirdIndex.ToString()];
-                foreach(Actor actor in thirdFamily.actors)
+                Family thirdFamily = (Family)FamilyOverviewWindow.getFromFamilies(ref thirdIndex);
+                if (thirdFamily != null)
                 {
-                    if (actor == null)
+                    foreach(Actor actor in thirdFamily.actors)
                     {
-                        continue;
-                    }
-                    if (actor.data.actorID == id)
-                    {
-                        return actor;
+                        if (actor == null)
+                        {
+                            continue;
+                        }
+                        if (actor.data.actorID == id)
+                        {
+                            return actor;
+                        }
                     }
                 }
             }
@@ -354,6 +360,8 @@ namespace FamilyTreeMod
         public List<string> prevHeads = new List<string>();
 
         public string title;
+
+        public string signatureTrait;
 
         public void copyFamily(Family family)
         {

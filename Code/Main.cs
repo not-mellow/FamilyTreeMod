@@ -17,6 +17,7 @@ namespace FamilyTreeMod
 
         void Awake()
         {
+            // Patches.init();
             FamilyPatches.init();
             // TexturePatches.init();
             // ActorPatches.init();

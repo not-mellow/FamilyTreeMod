@@ -83,10 +83,10 @@ namespace FamilyTreeMod
                     NewBGs.addText(trait, contents, 8, new Vector3(70, -130+(Ypos*-10), 0));
                     Ypos++;
                 }
-                NewBGs.addText($"Stats:", contents, 10, new Vector3(190, -135, 0));
-                NewBGs.addText($"Kills: {headActor.kills}", contents, 8, new Vector3(190, -145, 0));
-                NewBGs.addText($"Age: {headActor.age}", contents, 8, new Vector3(190, -155, 0));
-                NewBGs.addText($"Level: {headActor.level}", contents, 8, new Vector3(190, -165, 0));
+                NewBGs.addText($"Stats:", contents, 10, new Vector3(190, -115, 0));
+                NewBGs.addText($"Kills: {headActor.kills}", contents, 8, new Vector3(190, -125, 0));
+                NewBGs.addText($"Age: {headActor.age}", contents, 8, new Vector3(190, -135, 0));
+                NewBGs.addText($"Level: {headActor.level}", contents, 8, new Vector3(190, -145, 0));
                 Ypos = 0;
                 foreach(FieldInfo field in headActor.curStats.GetType().GetFields())
                 {
@@ -94,7 +94,7 @@ namespace FamilyTreeMod
                     {
                         continue;
                     }
-                    NewBGs.addText($"{field.Name}: {field.GetValue(headActor.curStats).ToString()}", contents, 8, new Vector3(190, -175+(Ypos*-10), 0));
+                    NewBGs.addText($"{field.Name}: {field.GetValue(headActor.curStats).ToString()}", contents, 8, new Vector3(190, -155+(Ypos*-10), 0));
                     Ypos++;
                 }
             }

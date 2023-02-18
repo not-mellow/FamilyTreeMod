@@ -149,12 +149,19 @@ namespace FamilyTreeMod
 
             if (hasFamilyComponent)
             {
-                // if (randomParent2 == null)
+                int inheritValue = -1;
+                int.TryParse(SettingsWindow.inputOptions["InheritTraits"], out inheritValue);
+                if (inheritValue != -1)
+                {
+                    float chance = (float)inheritValue/100f;
+                    inheritTraitsChance(randomParent.data.traits, actorData.status, chance);
+                    inheritTraitsChance(randomParent2.data.traits, actorData.status, chance);
+                }
+                // Family familyOfChild = FamilyOverviewWindow.getFromFamilies(ref firstFamily.familyIndex);
+                // if(familyOfChild != null)
                 // {
-                //     Debug.Log("randomParent2 is null");
+                //     actorData.status.addTrait(familyOfChild.signatureTrait);
                 // }
-                // inheritTraitsChance(randomParent.data.traits, actorData.status, 0.6f);
-                // inheritTraitsChance(randomParent2.data.traits, actorData.status, 0.6f);
                 bool isMale = false;
                 if (actorData.status.gender == ActorGender.Male)
                 {
@@ -221,13 +228,13 @@ namespace FamilyTreeMod
                 {
                     loverFamily.loverID = actor.data.actorID;
                     loverFamily.deadLoverID = actorFamily.deadID;
-                    Family aFamily = FamilyOverviewWindow.families[loverFamily.familyIndex.ToString()];
+                    Family aFamily = FamilyOverviewWindow.getFromFamilies(ref loverFamily.familyIndex);
                     aFamily.addActor(actor);
                     FamilyOverviewWindow.deadActorList[loverFamily.deadID].loverID = actor.data.actorID;
 
                     actorFamily.loverID = lover.data.actorID;
                     actorFamily.deadLoverID = loverFamily.deadID;
-                    Family bFamily = FamilyOverviewWindow.families[actorFamily.familyIndex.ToString()];
+                    Family bFamily = FamilyOverviewWindow.getFromFamilies(ref actorFamily.familyIndex);
                     bFamily.addActor(lover);
                     FamilyOverviewWindow.deadActorList[actorFamily.deadID].loverID = lover.data.actorID;
                 }
@@ -251,7 +258,7 @@ namespace FamilyTreeMod
                 actorFamily.loverID = lover.data.actorID;
                 actorFamily.deadLoverID = loverFamily.deadID;
 
-                Family family = FamilyOverviewWindow.families[loverFamily.familyIndex.ToString()];
+                Family family = FamilyOverviewWindow.getFromFamilies(ref loverFamily.familyIndex);
 
                 FamilyOverviewWindow.deadActorList.Add(
                     loverFamily.deadID,
@@ -319,13 +326,13 @@ namespace FamilyTreeMod
                     __result.data.firstName = __result.getName() + " " + actorFamily.founderName;
                 }
 
-                if (fatherActor != null && !string.IsNullOrEmpty(fatherName))
-                {
-                    if (FamilyActor.getFamily(fatherActor).childrenID.Count == 1)
-                    {
-                        __result.data.firstName = fatherName + " II";
-                    }
-                }
+                // if (fatherActor != null && !string.IsNullOrEmpty(fatherName))
+                // {
+                //     if (FamilyActor.getFamily(fatherActor).childrenID.Count == 1)
+                //     {
+                //         __result.data.firstName = fatherName + " II";
+                //     }
+                // }
 
                 FamilyOverviewWindow.deadActorList.Add(
                     actorFamily.deadID,
@@ -416,7 +423,7 @@ namespace FamilyTreeMod
             newActorFamily.copyFamily(prevActorFamily, null);
 
             Actor father = NewActions.getActorByIndex(newActorFamily.fatherID, newActorFamily.fatherFamilyIndex, newActorFamily.motherFamilyIndex);
-            if (father != null)
+            if (father != null && FamilyActor.getFamily(father) != null)
             {
                 FamilyActor.getFamily(father).removeChild(prevActor, prevActor.data.actorID);
                 FamilyActor.getFamily(father).addChild(newActor, newActor.data.actorID, prevActorFamily.isHead, newActorFamily.deadID);
@@ -430,7 +437,7 @@ namespace FamilyTreeMod
             }
             
             Actor mother = NewActions.getActorByIndex(newActorFamily.motherID, newActorFamily.fatherFamilyIndex, newActorFamily.motherFamilyIndex);
-            if (mother != null)
+            if (mother != null && FamilyActor.getFamily(mother) != null)
             {
                 FamilyActor.getFamily(mother).removeChild(prevActor, prevActor.data.actorID);
                 FamilyActor.getFamily(mother).addChild(newActor, newActor.data.actorID, prevActorFamily.isHead, newActorFamily.deadID);
@@ -443,12 +450,20 @@ namespace FamilyTreeMod
                 newActorFamily.motherID = newActorFamily.deadMotherID;
             }
 
-            FamilyOverviewWindow.families[newActorFamily.fatherFamilyIndex.ToString()].actors.Remove(prevActor);
-            FamilyOverviewWindow.families[newActorFamily.fatherFamilyIndex.ToString()].addActor(newActor);
-            FamilyOverviewWindow.families[newActorFamily.motherFamilyIndex.ToString()].actors.Remove(prevActor);
-            FamilyOverviewWindow.families[newActorFamily.motherFamilyIndex.ToString()].addActor(newActor);
+            Family sFatherFamily = FamilyOverviewWindow.getFromFamilies(ref newActorFamily.fatherFamilyIndex);
+            if (sFatherFamily != null)
+            {
+                sFatherFamily.actors.Remove(prevActor);
+                sFatherFamily.addActor(newActor);
+            }
+            Family sMotherFamily = FamilyOverviewWindow.getFromFamilies(ref newActorFamily.motherFamilyIndex);
+            if (sMotherFamily != null)
+            {
+                sMotherFamily.actors.Remove(prevActor);
+                sMotherFamily.addActor(newActor);
+            }
             
-            Family curFamily = FamilyOverviewWindow.families[newActorFamily.familyIndex.ToString()];
+            Family curFamily = FamilyOverviewWindow.getFromFamilies(ref newActorFamily.familyIndex);
             if (prevActorFamily.isHeir)
             {
                 curFamily.heirID = newActor.data.actorID;
@@ -479,7 +494,7 @@ namespace FamilyTreeMod
             {
                 actorFamily.refreshHeir(__instance);
             }
-            Family family = FamilyOverviewWindow.families[actorFamily.familyIndex.ToString()];
+            Family family = FamilyOverviewWindow.getFromFamilies(ref actorFamily.familyIndex);
             actorFamily.actorDied(__instance, family, pType);
 
             return true;

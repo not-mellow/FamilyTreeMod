@@ -126,9 +126,18 @@ namespace FamilyTreeMod
             Family motherFamily = FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
             Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
             FamilyActor actorFamily = FamilyActor.getFamily(actor);
-            fatherFamily.addActor(actor);
-            motherFamily.addActor(actor);
-            curFamily.addActor(actor);
+            if (fatherFamily != null)
+            {
+                fatherFamily.addActor(actor);
+            }
+            if (motherFamily != null)
+            {
+                motherFamily.addActor(actor);
+            }
+            if (curFamily != null)
+            {
+                curFamily.addActor(actor);
+            }
             this.childrenID.Add(id);
 
             Actor curHeir = NewActions.getActorByIndex(curFamily.heirID, this.familyIndex, this.fatherFamilyIndex, this.motherFamilyIndex);
@@ -241,7 +250,11 @@ namespace FamilyTreeMod
                     deadMother.childrenID.Add(this.deadID);
                     this.motherID = this.deadMotherID;
                 }
-                FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex).actors.Remove(actor);
+                Family sMotherFamily = FamilyOverviewWindow.getFromFamilies(ref this.motherFamilyIndex);
+                if (sMotherFamily != null)
+                {
+                    sMotherFamily.actors.Remove(actor);
+                }
             }
 
             foreach (string childID in this.childrenID)
@@ -265,6 +278,10 @@ namespace FamilyTreeMod
                     continue;
                 }
                 FamilyActor childFamily = FamilyActor.getFamily(child);
+                if (childFamily == null)
+                {
+                    continue;
+                }
                 if (isMale)
                 {
                     childFamily.fatherID = this.deadID;
@@ -348,7 +365,7 @@ namespace FamilyTreeMod
 
             if (setHead)
             {
-                Actor newHead = NewActions.getActorByIndex(family.HEADID, family.index, this.fatherFamilyIndex, this.fatherFamilyIndex);
+                Actor newHead = NewActions.getActorByIndex(family.HEADID, family.index, this.fatherFamilyIndex, this.motherFamilyIndex);
                 FamilyActor headActorFamily = FamilyActor.getFamily(newHead);
                 FamilyOverviewWindow.getFromFamilies(ref headActorFamily.fatherFamilyIndex);
                 FamilyOverviewWindow.getFromFamilies(ref headActorFamily.motherFamilyIndex);
@@ -390,7 +407,7 @@ namespace FamilyTreeMod
                 true,
                 pActor.kingdom
             );
-            if (newHeir != null)
+            if (newHeir != null && family != null)
             {
                 family.heirID = newHeir.data.actorID;
                 FamilyActor.getFamily(newHeir).isHeir = true;
@@ -542,6 +559,8 @@ namespace FamilyTreeMod
 
         public string title = "Peasant";
 
+        public string signatureTrait;
+
         public Family(string founder = null, Actor head = null, string name = null, int id = -1, int year = -1, int generation = -1)
         {
             this.founderID = founder;
@@ -550,6 +569,18 @@ namespace FamilyTreeMod
             {
                 this.HEADID = head.data.actorID;
                 this.actors.Add(head);
+                for (int i = 0; i < head.data.traits.Count; i++)
+                {
+                    string pID = head.data.traits[i];
+                    ActorTrait trait = AssetManager.traits.get(pID);
+                    if (trait.type != TraitType.Positive /*|| trait.group != TraitGroup.Genetic*/)
+                    {
+                        continue;
+                    }
+                    signatureTrait = pID;
+                    Debug.Log(signatureTrait);
+                    break;
+                }
             }
             this.index = id;
             this.founderDate = year;
@@ -744,8 +775,11 @@ namespace FamilyTreeMod
         public void removeChild(Actor actor, string id)
         {
             Family curFamily = FamilyOverviewWindow.getFromFamilies(ref this.familyIndex);
-            curFamily.actors.Remove(actor);
-            this.childrenID.Remove(id);
+            if (curFamily != null)
+            {
+                curFamily.actors.Remove(actor);
+                this.childrenID.Remove(id);
+            }
         }
     }
 

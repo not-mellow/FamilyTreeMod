@@ -74,9 +74,11 @@ namespace FamilyTreeMod
             }
             if (FamilyActor.getFamily(Config.selectedUnit) != null)
             {
-                showFamilyInfo(Config.selectedUnit);
-                treeButton.onClick.AddListener(() => openIndividualWindow(Config.selectedUnit));
-                Family thisFamily = FamilyOverviewWindow.getFromFamilies(ref FamilyActor.getFamily(Config.selectedUnit).familyIndex);
+                Actor selectedActor = Config.selectedUnit;
+                showFamilyInfo(selectedActor);
+                treeButton.onClick.RemoveAllListeners();
+                treeButton.onClick.AddListener(() => openIndividualWindow(selectedActor));
+                Family thisFamily = FamilyOverviewWindow.getFromFamilies(ref FamilyActor.getFamily(selectedActor).familyIndex);
                 if (thisFamily == null)
                 {
                     familyButton.onClick.RemoveAllListeners();

@@ -64,8 +64,17 @@ namespace FamilyTreeMod
                 "debug_icon",
                 "Max Children",
                 "Modify The Max Amount Of Children\nA Parent Can Produce",
-                new Vector3(0, 1),
+                new Vector2(0, 1),
                 5
+            );
+
+            createInputOption(
+                "InheritTraits", 
+                "debug_icon", 
+                "Trait Inheritance", 
+                "Modify the chance (1-100)\n of children inheriting their parent's traits", 
+                new Vector2(0, 3), 
+                6
             );
         }
 

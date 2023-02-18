@@ -22,7 +22,10 @@ Beta Version 0.4.7 - Bosses and Inheritance
 
 Beta Version 0.4.8 - More Buttons!
 - Added side button that will show family heritage when inspecting an individual.
+- Added a way to add people into existing families
 - Improved king inheritance
 - Re-added city inheritance
 - Bunch of bug fixes
 - Might not work with saves on older versions
+Current Concerns:
+- The inspect tree has no zoom in or out and doesn't expand properly when loading tree.

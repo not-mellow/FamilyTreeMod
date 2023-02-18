@@ -14,7 +14,7 @@ namespace FamilyTreeMod
             PowerButtons.CreateButton(
                 "familySelect",
                 Mod.EmbededResources.LoadSprite("FamilyTreeMod.Resources.Icons.family_icon.png"),
-                "Create A Family Hello dude",
+                "Create A Family ",
                 "Select A Unit To Make Them The Head Of A New Family",
                 createPos(1,0),
                 ButtonType.GodPower,
