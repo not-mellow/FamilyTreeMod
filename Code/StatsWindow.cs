@@ -88,14 +88,14 @@ namespace FamilyTreeMod
 
         private static void loadStats()
         {
-            if (!File.Exists($"{ModDeclaration.Info.NCMSModsPath}/StatRestrictions.json"))
+            if (!File.Exists($"{Core.NCMSModsPath}/StatRestrictions.json"))
             {
-                File.Delete($"{ModDeclaration.Info.NCMSModsPath}/StatRestrictions.json");
+                File.Delete($"{Core.NCMSModsPath}/StatRestrictions.json");
                 string json = JsonConvert.SerializeObject(restrictionStats, Formatting.Indented);
-                File.WriteAllText($"{ModDeclaration.Info.NCMSModsPath}/StatRestrictions.json", json);
+                File.WriteAllText($"{Core.NCMSModsPath}/StatRestrictions.json", json);
             }
 
-            string data = File.ReadAllText($"{ModDeclaration.Info.NCMSModsPath}/StatRestrictions.json");
+            string data = File.ReadAllText($"{Core.NCMSModsPath}/StatRestrictions.json");
             BaseStats loadedData = JsonConvert.DeserializeObject<BaseStats>(data);
             restrictionStats = loadedData;
         }
@@ -103,7 +103,7 @@ namespace FamilyTreeMod
         private static void saveStats()
         {
             string json = JsonConvert.SerializeObject(restrictionStats, Formatting.Indented);
-            File.WriteAllText($"{ModDeclaration.Info.NCMSModsPath}/StatRestrictions.json", json);
+            File.WriteAllText($"{Core.NCMSModsPath}/StatRestrictions.json", json);
         }
 
         private static void changeStats(string statName, InputField input)
