@@ -1,0 +1,12 @@
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.csproj.AssemblyReference.cache
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\PluginInfo.cs
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.AssemblyInfoInputs.cache
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.AssemblyInfo.cs
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.csproj.CoreCompileInputs.cache
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\MyFirstPlugin.deps.json
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\MyFirstPlugin.dll
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\MyFirstPlugin.pdb
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.csproj.CopyComplete
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.dll
+C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\MyFirstPlugin.pdb
