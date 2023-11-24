@@ -398,12 +398,12 @@ namespace FamilyTreeMod
             ScrollWindow.showWindow("inspect_unit");
         }
 
-        public static Button createBGWindowButton(GameObject parent, int posY, string iconName, string buttonName, string buttonTitle, 
+        public static Button createBGWindowButton(GameObject parent, int posY, Sprite sprite, string buttonName, string buttonTitle, 
         string buttonDesc, UnityAction call)
         {
             PowerButton button = CreateButton(
                 buttonName,
-                null,
+                sprite,
                 buttonTitle,
                 buttonDesc,
                 new Vector2(118, posY),

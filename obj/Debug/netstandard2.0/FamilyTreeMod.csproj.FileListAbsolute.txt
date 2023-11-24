@@ -1,11 +1,11 @@
-D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.deps.json
-D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.dll
-D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.pdb
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\bin\Debug\netstandard2.0\FamilyTreeMod.deps.json
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\bin\Debug\netstandard2.0\FamilyTreeMod.dll
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\bin\Debug\netstandard2.0\FamilyTreeMod.pdb
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\bin\Debug\netstandard2.0\Assembly-CSharp.dll
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\bin\Debug\netstandard2.0\UnityEngine.UI.dll
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.deps.json
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.dll
+D:\SteamLibrary\steamapps\common\worldbox\BepInEx\plugins\FamilyTreeMod\FamilyTreeMod.pdb
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\FamilyTreeMod.csproj.AssemblyReference.cache
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\PluginInfo.cs
 C:\Users\The Jedeye\Desktop\Mods\FamilyTreeMod\obj\Debug\netstandard2.0\FamilyTreeMod.GeneratedMSBuildEditorConfig.editorconfig

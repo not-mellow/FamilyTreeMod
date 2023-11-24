@@ -12,7 +12,7 @@ using UnityEngine;
 namespace FamilyTreeMod
 {
     // Commenting My Code Cause Of Haters SMH! (jk key and cody, i luv u)
-    [BepInPlugin("org.bepinex.plugins.familytreemod", "FamilyTreeMod", "1.0.0.0")]
+    [BepInPlugin("org.bepinex.plugins.familytreemod", "FamilyTreeMod", "1.1.0.0")]
     public class Plugin : BaseUnityPlugin
     {
         public static FamilyTreeSettings settings = new FamilyTreeSettings();

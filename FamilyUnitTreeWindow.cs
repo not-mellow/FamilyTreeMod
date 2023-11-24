@@ -26,7 +26,7 @@ namespace FamilyTreeMod
             UI.createBGWindowButton(
                 GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/familyUnitTreeWindow/Background"), 
                 0, 
-                "",//string iconName, 
+                AssetLoader.cached_assets_list["FamilyTreeUI/iconDownvote.png"][0],//string iconName, 
                 "downButton",//string buttonName, 
                 "Increase Scroll Size",//string buttonTitle, 
                 "Press This To Increase Scroll Space",//string buttonDesc, 

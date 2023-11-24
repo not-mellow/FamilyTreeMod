@@ -20,6 +20,8 @@ namespace FamilyTreeMod
         public int memberIndex = 0;
         public string familyName = "";
         public Dictionary<string, DeadFamilyMember> deadMembers = new Dictionary<string, DeadFamilyMember>();
+        public List<string> deadHeads = new List<string>();
+        public List<string> deadFavs = new List<string>();
 
         public static FamilyInfo create_family(Actor pActor)
         {
