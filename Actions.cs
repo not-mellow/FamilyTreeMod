@@ -67,6 +67,9 @@ namespace FamilyTreeMod
             }
             Config.selectedUnit = actor;
             FamilyInfo.create_family(Config.selectedUnit);
+            actor.setStatsDirty();
+            actor.startShake(0.3f, 0.1f, true, true);
+            actor.startColorEffect(ActorColorEffect.White);
             return true;
         }
     }

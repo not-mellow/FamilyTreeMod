@@ -20,21 +20,21 @@ namespace FamilyTreeMod
         public static void create_settings()
         {
             string json = JsonConvert.SerializeObject(new FamilyTreeSettings(), Formatting.Indented);
-            File.WriteAllText($"{Paths.PluginPath}/FamilyTreeMod/FamilyTreeModSettings.json", json);
+            File.WriteAllText($"{Paths.PluginPath}/CollectionMod/FamilyTreeModSettings.json", json);
         }
 
         public static void load_settings()
         {
-            string data = File.ReadAllText($"{Paths.PluginPath}/FamilyTreeMod/FamilyTreeModSettings.json");
+            string data = File.ReadAllText($"{Paths.PluginPath}/CollectionMod/FamilyTreeModSettings.json");
             FamilyTreeSettings loadedData = JsonConvert.DeserializeObject<FamilyTreeSettings>(data);
             Plugin.settings = loadedData;
         }
 
         public static void save_settings()
         {
-            File.Delete($"{Paths.PluginPath}/FamilyTreeMod/FamilyTreeModSettings.json");
+            File.Delete($"{Paths.PluginPath}/CollectionMod/FamilyTreeModSettings.json");
             string json = JsonConvert.SerializeObject(Plugin.settings, Formatting.Indented);
-            File.WriteAllText($"{Paths.PluginPath}/FamilyTreeMod/FamilyTreeModSettings.json", json);
+            File.WriteAllText($"{Paths.PluginPath}/CollectionMod/FamilyTreeModSettings.json", json);
             WorldTip.instance.show("Family Tree Settings Have Been Saved", false, "top", 3f);
         }
     }

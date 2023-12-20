@@ -17,7 +17,7 @@ namespace FamilyTreeMod
 
         public static void init()
         {
-            loadAssetFolder($"{Paths.PluginPath}/FamilyTreeMod/FamilyTreeModAssets");
+            loadAssetFolder($"{Paths.PluginPath}/CollectionMod/CollectionModAssets");
         }
 
         private static void loadAssetFolder(string pPath)
@@ -53,7 +53,7 @@ namespace FamilyTreeMod
             string[] array = pPath.Split(new char[] { Path.DirectorySeparatorChar });
             string text = array[array.Length - 1];
             byte[] array2 = File.ReadAllBytes(pPath);
-            string newPath = pPath.Remove(0, pPath.IndexOf("/FamilyTreeModAssets") + 21).Replace('\\', '/');
+            string newPath = pPath.Remove(0, pPath.IndexOf("/CollectionModAssets") + 21).Replace('\\', '/');
             // Might Need To Change This Back In The Future But For Now It Does The Job
             addSpriteList(newPath, text.Remove(text.IndexOf(".png")), array2);
         }

@@ -24,7 +24,7 @@ namespace FamilyTreeMod
 
         public static void init()
         {
-            UI.createTab("Button Tab_FamilyTreeMod", "Tab_FamilyTreeMod", "FamilyTreeMod", "This tab is for family features", -200);
+            UI.createTab("Button Tab_FamilyTreeMod", "Tab_FamilyTreeMod", "FamilyTreeMod", "This tab is for family features", new Vector2(-150, 15));
 
             familyTreeTab = getPowersTab("FamilyTreeMod");
             familyTreeButtons = new GameObject("DejButtons");
@@ -85,7 +85,7 @@ namespace FamilyTreeMod
                         new Vector2(0, 0),
                         ButtonType.Click,
                         familyTreeButtons.transform, 
-                        () => FamilyTreeWindow.openWindow(info.familyIndex)
+                        () => FamilyOverviewWindow.openWindow(info.familyIndex)
                     );
                     yield return new WaitForSeconds(0.5f);
                     while (!Plugin.settings.families.ContainsKey(SaveManager.currentSavePath))
@@ -101,7 +101,7 @@ namespace FamilyTreeMod
         private static void loadButtons()
         {
             UI.CreateButton("inspectMember_Dej",
-                AssetLoader.cached_assets_list["FamilyTreeUI/iconWorldInfo.png"][0],
+                AssetLoader.cached_assets_list["iconWorldInfo.png"][0],
                 "Inspect Family Member", 
                 "Show Member's Info", 
                 new Vector2(0, 0),

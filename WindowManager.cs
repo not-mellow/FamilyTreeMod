@@ -29,6 +29,8 @@ namespace FamilyTreeMod
             FamilyMemberWindow.init();
             newWindow("familyInfoWindow", "Family Info");
             FamilyInfoWindow.init();
+            newWindow("familyOverviewWindow", "Family Overview");
+            FamilyOverviewWindow.init();
         }
 
         private static void newWindow(string id, string title)

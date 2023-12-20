@@ -28,7 +28,7 @@ namespace FamilyTreeMod
             UI.createBGWindowButton(
                 GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/familyMemberWindow/Background"),
                 0, 
-                AssetLoader.cached_assets_list["FamilyTreeUI/iconDownvote.png"][0], 
+                AssetLoader.cached_assets_list["iconDownvote.png"][0], 
                 "familyTreeButton", 
                 "Family Tree", 
                 "View This Unit's Family Tree", 

@@ -18,6 +18,7 @@ namespace FamilyTreeMod
         private static int currentFamilyIndex = 0;
         private static GameObject contents;
         private static Vector3 originalSize = new Vector3(100, 207);
+        private static int currentUIIndex = 0;
 
         public static void init()
         {
@@ -40,17 +41,27 @@ namespace FamilyTreeMod
             UI.createBGWindowButton(
                 GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/familyTreeWindow/Background"), 
                 0, 
-                AssetLoader.cached_assets_list["FamilyTreeUI/iconDownvote.png"][0],//string iconName, 
+                AssetLoader.cached_assets_list["iconDownvote.png"][0],//string iconName, 
                 "downButton2",//string buttonName, 
                 "Increase Scroll Size",//string buttonTitle, 
                 "Press This To Increase Scroll Space",//string buttonDesc, 
                 increaseScrollSize
+            );
+            UI.createBGWindowButton(
+                GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/familyTreeWindow/Background"), 
+                -100, 
+                AssetLoader.cached_assets_list["iconDownvote.png"][0],//string iconName, 
+                "familyOverviewButton",//string buttonName, 
+                "View Family Overview",//string buttonTitle, 
+                "Go To Family Overview Window",//string buttonDesc, 
+                () => FamilyOverviewWindow.openWindow(currentFamilyIndex)
             );
         }
 
         public static void openWindow(int familyIndex)
         {
             currentFamilyIndex = familyIndex;
+            currentUIIndex = 0;
 
             foreach(Transform child in contents.transform)
             {
@@ -59,9 +70,14 @@ namespace FamilyTreeMod
             contents.GetComponent<RectTransform>().sizeDelta = originalSize;
 
             FamilyInfo info = Plugin.settings.families[SaveManager.currentSavePath][currentFamilyIndex];
-            for(int i = 1; i < info.memberIndex; i++)
+            
+            for(int i = 1; i < /*info.memberIndex*/26; i++)
             {
-                loadMemberUI(i);
+                if (info.memberIndex >= i)
+                {
+                    loadMemberUI(i);
+                    currentUIIndex = i;
+                }
             }
             UI.ShowWindow("familyTreeWindow");
         }
@@ -81,6 +97,16 @@ namespace FamilyTreeMod
 
         private static void increaseScrollSize()
         {
+            FamilyInfo info = Plugin.settings.families[SaveManager.currentSavePath][currentFamilyIndex];
+            int count = currentUIIndex+11;
+            for(int i = currentUIIndex+1; i < count; i++)
+            {
+                if (info.memberIndex >= i)
+                {
+                    loadMemberUI(i);
+                    currentUIIndex = i;
+                }
+            }
             contents.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 100);
             foreach(Transform child in contents.transform)
             {

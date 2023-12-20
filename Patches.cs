@@ -85,6 +85,7 @@ namespace FamilyTreeMod
 
 
 			// Finding Possible Spouse For Family Actor
+			bool hasFamily = true;
 			if (actor2 == null)
 			{
             	actor2 = __instance._possibleParents.Pop<Actor>();
@@ -104,8 +105,7 @@ namespace FamilyTreeMod
 				}
 				else
 				{
-					__result = false;
-					return false;
+					hasFamily = false;
 				}
 			}
 			ResourceAsset foodItem = pCity.getFoodItem(null);
@@ -152,7 +152,10 @@ namespace FamilyTreeMod
 			}
 
             // Add Child To Family
-            FamilyInfo.add_member(actor, actor2, actorData);
+			if (hasFamily)
+			{
+            	FamilyInfo.add_member(actor, actor2, actorData);
+			}
 			__result = true;
             return false;
 		}

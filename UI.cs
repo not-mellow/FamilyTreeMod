@@ -94,7 +94,7 @@ namespace FamilyTreeMod
                         gameObject4.transform.localScale = new Vector3(0.12f, 0.07f, 1f);
                         gameObject4.transform.localPosition = new Vector3(0f, 14.57f, 0f);
                         Image image = gameObject4.AddComponent<Image>();
-                        image.sprite = AssetLoader.cached_assets_list["FamilyTreeUI/buttonToggleIndicator_1.png"][0];
+                        image.sprite = AssetLoader.cached_assets_list["buttonToggleIndicator_1.png"][0];
                         component3.type = PowerButtonType.Library;
                         ToggleValues.Add(name, false);
                         component2.onClick.AddListener(delegate
@@ -127,11 +127,11 @@ namespace FamilyTreeMod
 				bool flag2 = ToggleValues[name];
 				if (flag2)
 				{
-					component.sprite = AssetLoader.cached_assets_list["FamilyTreeUI/buttonToggleIndicator_0.png"][0];
+					component.sprite = AssetLoader.cached_assets_list["buttonToggleIndicator_0.png"][0];
 				}
 				else
 				{
-					component.sprite = AssetLoader.cached_assets_list["FamilyTreeUI/buttonToggleIndicator_1.png"][0];
+					component.sprite = AssetLoader.cached_assets_list["buttonToggleIndicator_1.png"][0];
 				}
 				return;
 			}
@@ -215,7 +215,7 @@ namespace FamilyTreeMod
             return scrollWindow;
         }
 
-        public static void createTab(string buttonID, string tabID, string name, string desc, int xPos)
+        public static void createTab(string buttonID, string tabID, string name, string desc, Vector2 pos)
         {
             GameObject OtherTabButton = Utils.FindInActiveObjectByName("Button_Other");
             if (OtherTabButton != null)
@@ -236,7 +236,7 @@ namespace FamilyTreeMod
 
 
 
-                newTabButton.transform.localPosition = new Vector3(xPos, 49.62f);
+                newTabButton.transform.localPosition = new Vector3(pos.x, 49.62f+pos.y);
                 newTabButton.transform.localScale = new Vector3(1f, 1f);
                 newTabButton.name = buttonID;
 
@@ -313,7 +313,6 @@ namespace FamilyTreeMod
             GORect.localScale = newScale;
 
             Button GOButton = GO.AddComponent<Button>();
-            GOButton.onClick.AddListener(() => FamilyMemberWindow.openWindow(actor, dead));
             GO.AddComponent<GraphicRaycaster>();
             if ((actor == null || !actor.isAlive()) && dead != null)
             {
@@ -337,6 +336,7 @@ namespace FamilyTreeMod
                     });
                     })
                 );
+                GOButton.onClick.AddListener(() => FamilyMemberWindow.openWindow(actor, dead));
 			    GOButton.OnHoverOut(new UnityAction(Tooltip.hideTooltip));
                 GO.transform.Find("Mask").GetChild(1).gameObject.SetActive(false);
                 return;
@@ -359,6 +359,14 @@ namespace FamilyTreeMod
 			    GOButton.OnHoverOut(new UnityAction(Tooltip.hideTooltip));
                 GO.transform.Find("Mask").GetChild(1).gameObject.SetActive(false);
                 return;
+            }
+            int actorFamilyIndex = -1;
+            int actorMemberIndex = 0;
+            actor.data.get("familyIndex", out actorFamilyIndex, -1);
+            actor.data.get("memberIndex", out actorMemberIndex, 0);
+            if (actorFamilyIndex != -1)
+            {
+                GOButton.onClick.AddListener(() => FamilyUnitTreeWindow.openWindow(actorFamilyIndex, actorMemberIndex));
             }
 
             GOButton.OnHover(new UnityAction(() => actorTooltip(actor)));
@@ -413,7 +421,7 @@ namespace FamilyTreeMod
             );
 
             Image buttonBG = button.gameObject.GetComponent<Image>();
-            buttonBG.sprite = AssetLoader.cached_assets_list["FamilyTreeUI/backgroundTabButton.png"][0];
+            buttonBG.sprite = AssetLoader.cached_assets_list["backgroundTabButton.png"][0];
             Button buttonButton = button.gameObject.GetComponent<Button>();
             buttonBG.rectTransform.localScale = Vector3.one;
 
